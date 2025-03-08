@@ -1,0 +1,15 @@
+# Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
+_commit: v4.3.8
+_src_path: https://github.com/jupyterlab/extension-template
+author_email: dabby04@student.ubc.ca
+author_name: Oluwadabira
+has_binder: true
+has_settings: false
+kind: server
+labextension_name: jupyterbugbot
+project_short_description: A JupyterLab extension that uses AI agents to detect buggy
+    and vulnerable code.
+python_name: jupyterbugbot
+repository: https://github.com/github_username/jupyterbugbot
+test: true
+

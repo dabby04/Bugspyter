@@ -46,6 +46,9 @@ def request_api_key():
     llm=ChatGroq(model="llama3-8b-8192",max_retries=3) #initialising llm
     return llm,"LLM initialised"
 
+def test():
+    return "You did it"
+
 def load_notebook(llm, argument):
     """
     Load the notebook content into the LLM and run all request calls

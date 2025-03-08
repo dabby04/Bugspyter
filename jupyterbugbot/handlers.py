@@ -3,8 +3,9 @@ import json
 from jupyter_server.base.handlers import APIHandler
 from jupyter_server.utils import url_path_join
 import tornado
-from chat import request_api_key
-from chat import load_notebook
+# from chat import request_api_key
+# from chat import load_notebook
+from chat import test
 
 class RouteHandler(APIHandler):
     # The following decorator should be present on all verb methods (head, get, post,
@@ -12,10 +13,11 @@ class RouteHandler(APIHandler):
     # Jupyter server
     @tornado.web.authenticated
     def get(self):
-        result=request_api_key()
+        result=test()
         self.finish(json.dumps({
             "data": "This is /jupyterbugbot/get-example endpoint!",
-            "result": result
+            "print":"here",
+            # "result": result
         }))
         
     

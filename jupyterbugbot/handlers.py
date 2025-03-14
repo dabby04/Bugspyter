@@ -2,10 +2,10 @@ import json
 
 from jupyter_server.base.handlers import APIHandler
 from jupyter_server.utils import url_path_join
+from .chat import test
+from .chat import request_api_key
 import tornado
-# from chat import request_api_key
-# from chat import load_notebook
-from chat import test
+import os
 
 class RouteHandler(APIHandler):
     # The following decorator should be present on all verb methods (head, get, post,
@@ -13,11 +13,10 @@ class RouteHandler(APIHandler):
     # Jupyter server
     @tornado.web.authenticated
     def get(self):
-        result=test()
+        # result=test()
         self.finish(json.dumps({
             "data": "This is /jupyterbugbot/get-example endpoint!",
-            "print":"here",
-            # "result": result
+            "result": test()
         }))
         
     
@@ -29,13 +28,24 @@ class RouteHandler(APIHandler):
 
     #     self.finish(json.dumps(data))
 
+class ConfigHandler(APIHandler):
+    @tornado.web.authenticated
+    def post(self):
+        input_data=self.get_json_body()
+        data=input_data["api"]
+        result=request_api_key(data)
+        self.finish(json.dumps({
+            "data": "This is /jupyterbugbot/get-example endpoint!",
+            "result": result
+        }))
 
 def setup_handlers(web_app):
     host_pattern = ".*$"
 
     base_url = web_app.settings["base_url"]
-    route_pattern = url_path_join(base_url, "jupyterbugbot", "get-example")
-    handlers = [(route_pattern, RouteHandler)]
+    route_pattern1 = url_path_join(base_url, "jupyterbugbot", "get-example")
+    route_pattern2=url_path_join(base_url,"jupyterbugbot","request_api")
+    handlers = [(route_pattern1, RouteHandler),(route_pattern2, ConfigHandler)]
     web_app.add_handlers(host_pattern, handlers)
     
 

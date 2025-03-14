@@ -1,4 +1,3 @@
-# Class that handles all AI calls
 import warnings
 import sys
 
@@ -28,43 +27,57 @@ from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import START, MessagesState, StateGraph
 from IPython.display import display, Markdown
 
-# Things to consider:
-# I want to initialise
+llm = None
 
-def request_api_key():
+def test():
+    return "Please work"
+
+def request_api_key(api_key):
     """
     Makes sure users API key is received and LLM is initialised
     """
-    api_key_file='api.txt'
-    with open(api_key_file,'r') as file:
-        api_key=file.read().strip()
-    
     if not api_key:
-        return "Error: No API key found in the file."
-    
+        return "API key not initialised"
     os.environ["GROQ_API_KEY"] = api_key
-    llm=ChatGroq(model="llama3-8b-8192",max_retries=3) #initialising llm
-    return llm,"LLM initialised"
+    try:
+        global llm
+        llm=ChatGroq(model="llama3-8b-8192",max_retries=3) #initialising llm
+    except:
+        return("Could not initialise LLM")
+    return "LLM initialised"
 
-def test():
-    return "You did it"
-
-def load_notebook(llm, argument):
+def load_notebook(argument):
     """
     Load the notebook content into the LLM and run all request calls
     """
     argument = sys.argv[1]  # Name of notebook being passed
     path=f"../{argument}"
-    loader = GenericLoader.from_filesystem(
-        path, #need to get name of notebook and pass it here
-        glob="*",
-        suffixes=[".ipynb"],
-        parser=LanguageParser(),
-    )
-    docs = loader.load()
+    loader = NotebookLoader(
+    path,
+    include_outputs=True,
+    max_output_length=20
+)
+    docs=loader.load_and_split()
+    content = docs
+    
+    workflow = StateGraph(state_schema=MessagesState)
+    # Define the node and edge
+    workflow.add_node("model", buggy_or_not)
+    workflow.add_edge(START, "model")
+
+    # Add simple in-memory checkpointer
+    memory = MemorySaver()
+    app = workflow.compile(checkpointer=memory)
+    config={"configurable": {"thread_id": "1"}}
+
     return("works")
-    
-    
 
+def buggy_or_not(state: MessagesState):
+       
+    system_message= """You are a reviewer for computational notebooks.
+    Answer all questions to the best of your ability concerning this notebook"""
+    messages = [SystemMessage(content=system_message)] + state["messages"]
+    response = llm.invoke(messages)
 
-    
+    return {"messages": response}
+

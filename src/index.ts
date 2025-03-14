@@ -174,20 +174,30 @@ const plugin: JupyterFrontEndPlugin<void> = {
         );
       });
 
+      // requestAPI<any>('request_api')
+      // .then(data => {
+      //   console.log(data);
+      // })
+      // .catch(reason => {
+      //   console.error(
+      //     `The jupyterlab_examples_server server extension appears to be missing.\n${reason}`
+      //   );
+      // });  
+
     // POST request
-    // const dataToSend = { name: 'George' };
-    // requestAPI<any>('hello', {
-    //   body: JSON.stringify(dataToSend),
-    //   method: 'POST'
-    // })
-    //   .then(reply => {
-    //     console.log(reply);
-    //   })
-    //   .catch(reason => {
-    //     console.error(
-    //       `Error on POST /jupyterlab-examples-server/hello ${dataToSend}.\n${reason}`
-    //     );
-    //   });
+    const dataToSend = { api: '' };
+    requestAPI<any>('request_api', {
+      body: JSON.stringify(dataToSend),
+      method: 'POST'
+    })
+      .then(reply => {
+        console.log(reply);
+      })
+      .catch(reason => {
+        console.error(
+          `Error on POST /jupyterlab-examples-server/hello ${dataToSend}.\n${reason}`
+        );
+      });
     }
 }
 

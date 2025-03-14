@@ -10,11 +10,10 @@ import { INotebookTracker } from '@jupyterlab/notebook';
 import { ITranslator } from '@jupyterlab/translation';
 import { CommandToolbarButton, codeCheckIcon } from '@jupyterlab/ui-components';
 import { Panel } from '@lumino/widgets';
+import { BugBotWidget } from './results';
 // import * as React from 'react';
 // import { DocumentManager } from '@jupyterlab/docmanager';
 // import { ILauncher } from '@jupyterlab/launcher';
-
-import { requestAPI } from './handler';
 
 function activate(
   app: JupyterFrontEnd,
@@ -26,36 +25,11 @@ function activate(
   console.log(
     'JupyterLab extension @jupyterlab-examples/server-extension is activated!'
   );
-  //Get request for testing
-  requestAPI<any>('get-example')
-    .then(data => {
-      console.log(data);
-    })
-    .catch(reason => {
-      console.error(
-        `The jupyterlab_examples_server server extension appears to be missing.\n${reason}`
-      );
-    });
-
-  // POST request
-  const dataToSend = { api: '' };
-  requestAPI<any>('request_api', {
-    body: JSON.stringify(dataToSend),
-    method: 'POST'
-  })
-    .then(reply => {
-      console.log(reply);
-    })
-    .catch(reason => {
-      console.error(
-        `Error on POST /jupyterlab-examples-server/hello ${dataToSend}.\n${reason}`
-      );
-    });
+  
 
   const { commands } = app;
   const command: string = 'apod:insert1';
 
-  console.log("here")
   commands.addCommand(command, {
     label: 'Buggy/Vulnerable Identification',
     icon: codeCheckIcon,
@@ -96,6 +70,7 @@ function activate(
 }
 
 function addSideBar(app: any) {
+  `Adding sidebar panel to show results in Jupyter environment`
   const panelId = 'Results-tab';
   const existingPanel = Array.from(app.shell.widgets('left')).find((widget: any) => widget.id === panelId);
   if (existingPanel) {
@@ -104,7 +79,7 @@ function addSideBar(app: any) {
   const panel = new Panel();
   panel.id = panelId;
   panel.title.icon = codeCheckIcon;
-  // panel.addWidget(new BugBotWidget());
+  panel.addWidget(new BugBotWidget());
   app.shell.add(panel, 'left', { rank: 2000 })
   app.shell.activateById('Results-tab')
 }
@@ -120,13 +95,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
   autoStart: true,
   requires: [ICommandPalette, INotebookTracker],
   optional: [ILayoutRestorer],
-  activate:
-    activate
-
-  // Try avoiding awaiting in the activate function because
-  // it will delay the application start up time.
-
-
+  activate: activate
 }
 
 

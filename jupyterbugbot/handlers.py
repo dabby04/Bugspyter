@@ -32,7 +32,7 @@ class ConfigHandler(APIHandler):
     @tornado.web.authenticated
     def post(self):
         input_data=self.get_json_body()
-        data=input_data["api"]
+        data=input_data["key"]
         result=request_api_key(data)
         self.finish(json.dumps({
             "data": "This is /jupyterbugbot/get-example endpoint!",

@@ -34,7 +34,7 @@ function activate(
     label: 'Buggy/Vulnerable Identification',
     icon: codeCheckIcon,
     execute: async () => {
-      addSideBar(app)
+      addSideBar(app,notebookTracker)
     }
   });
 
@@ -69,8 +69,21 @@ function activate(
   });
 }
 
-function addSideBar(app: any) {
+function addSideBar(app: any,notebookTracker:INotebookTracker) {
   `Adding sidebar panel to show results in Jupyter environment`
+
+  const activeNotebook = notebookTracker.currentWidget;
+  if (!activeNotebook) {
+    console.warn('No active notebook.');
+    return;
+  }
+  let path = activeNotebook?.context.contentsModel?.path; //gets the path of the notebook to add as input for loading
+  if (!path) {
+    path = "";
+  }
+
+  let validPath=path
+
   const panelId = 'Results-tab';
   const existingPanel = Array.from(app.shell.widgets('left')).find((widget: any) => widget.id === panelId);
   if (existingPanel) {
@@ -79,7 +92,7 @@ function addSideBar(app: any) {
   const panel = new Panel();
   panel.id = panelId;
   panel.title.icon = codeCheckIcon;
-  panel.addWidget(new BugBotWidget());
+  panel.addWidget(new BugBotWidget(validPath));
   app.shell.add(panel, 'left', { rank: 2000 })
   app.shell.activateById('Results-tab')
 }

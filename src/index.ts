@@ -8,7 +8,7 @@ import {
 import { ICommandPalette } from '@jupyterlab/apputils';
 import { INotebookTracker } from '@jupyterlab/notebook';
 import { ITranslator } from '@jupyterlab/translation';
-import { CommandToolbarButton, codeCheckIcon } from '@jupyterlab/ui-components';
+import { CommandToolbarButton, codeCheckIcon,bugDotIcon } from '@jupyterlab/ui-components';
 import { Panel } from '@lumino/widgets';
 import { BugBotWidget } from './results';
 // import * as React from 'react';
@@ -47,23 +47,23 @@ function activate(
     const toolbar = notebookPanel.toolbar;
 
     // Add a command if it isn't already added
-    if (!commands.hasCommand('apod:insert-picture')) {
-      commands.addCommand('apod:insert-picture', {
-        label: 'Bug-Bot',
-        icon: codeCheckIcon, // Set an icon if you want
+    if (!commands.hasCommand('apod:insert1')) {
+      commands.addCommand('apod:insert1', {
+        label: 'BugBot',
+        icon: bugDotIcon, // Set an icon if you want
         execute: async () => {
           // Add functionality for the command, like inserting an image or executing something.
         },
-        caption: 'Notebook Optimisation' // Tooltip
+        caption: 'Buggy/Vulnerable Analysis' // Tooltip
       });
     }
 
     // Add the button to the toolbar
     toolbar.addItem(
-      'apodButton',
+      'apodButton1',
       new CommandToolbarButton({
         commands: app.commands,
-        id: 'apod:insert-picture' // The command ID we just added
+        id: 'apod:insert1' // The command ID we just added
       })
     );
   });

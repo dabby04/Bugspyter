@@ -2,6 +2,7 @@ import { ReactWidget } from '@jupyterlab/ui-components';
 import { requestAPI } from './handler';
 
 import React, { useState } from 'react';
+import Markdown from 'markdown-to-jsx';
 
 export class BugBotWidget extends ReactWidget {
     private notebook_path: string;
@@ -73,7 +74,7 @@ function BugBotComponent(props: BugBotComponentProps) {
     }
     return (
         <body id="main">
-            <div className="jp-Examplewidget"><h2>Code Bugs and Vulnerability Assessment</h2></div>
+            <div className="jp-Examplewidget"><h2>Code Bugs and Vulnerability Assessment</h2>
             {showForm ? (
                 <form onSubmit={handleSubmit}>
                     <label>
@@ -89,10 +90,11 @@ function BugBotComponent(props: BugBotComponentProps) {
                     <div><h3>What is the root cause of bugs in the notebook?</h3></div>
                     <body>{rootCause}</body>
                     <div><h3>Bug Analysis</h3></div>
-                    <body>{analysis}</body>
+                    <Markdown>{analysis}</Markdown>
                 </div>
                 )
             }
+            </div>
         </body>
     );
 }

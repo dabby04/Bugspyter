@@ -31,7 +31,7 @@ function activate(
   const command: string = 'apod:insert1';
 
   commands.addCommand(command, {
-    label: 'Buggy/Vulnerable Identification',
+    label: 'BugBot',
     icon: codeCheckIcon,
     execute: async () => {
       addSideBar(app,notebookTracker)
@@ -85,9 +85,9 @@ function addSideBar(app: any,notebookTracker:INotebookTracker) {
   let validPath=path
 
   const panelId = 'Results-tab';
-  const existingPanel = Array.from(app.shell.widgets('left')).find((widget: any) => widget.id === panelId);
+  const existingPanel = Array.from(app.shell.widgets('left')).find((widget: any) => widget.id === panelId) as Panel | undefined;
   if (existingPanel) {
-    return;
+    existingPanel.dispose();
   }
   const panel = new Panel();
   panel.id = panelId;

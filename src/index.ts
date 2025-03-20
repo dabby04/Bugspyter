@@ -11,9 +11,6 @@ import { ITranslator } from '@jupyterlab/translation';
 import { CommandToolbarButton, codeCheckIcon,bugDotIcon } from '@jupyterlab/ui-components';
 import { Panel } from '@lumino/widgets';
 import { BugBotWidget } from './results';
-// import * as React from 'react';
-// import { DocumentManager } from '@jupyterlab/docmanager';
-// import { ILauncher } from '@jupyterlab/launcher';
 
 function activate(
   app: JupyterFrontEnd,

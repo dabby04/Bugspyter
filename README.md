@@ -1,4 +1,4 @@
-# jupyterbugbot
+# Bugspyter
 
 [![Github Actions Status](https://github.com/github_username/jupyterbugbot/workflows/Build/badge.svg)](https://github.com/github_username/jupyterbugbot/actions/workflows/build.yml)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/github_username/jupyterbugbot/main?urlpath=lab)
@@ -47,6 +47,26 @@ the frontend extension, check the frontend extension is installed:
 
 ```bash
 jupyter labextension list
+```
+## Frontend extension is not working
+
+If you see the frontend extension, but it is not working, check that the server extension is enabled:
+
+```
+jupyter serverextension list
+```
+## Server extension is installed and enables, but jupyterbugbot does not appear
+
+If the server extension is installed and enabled, but you are not seeing the frontend, check the frontend is installed:
+
+```
+jupyter labextension list
+```
+If it is installed, try:
+
+```
+jupyter lab clean
+jupyter lab build
 ```
 
 ## Contributing

@@ -10,6 +10,9 @@ This extension is composed of a Python package named `jupyterbugbot`
 for the server extension and a NPM package named `jupyterbugbot`
 for the frontend extension.
 
+![ToolDemo](https://github.com/user-attachments/assets/2a13fe1e-e2e1-47b4-9907-976ef18fb30d)
+
+
 ## Requirements
 
 - JupyterLab >= 4.0.0

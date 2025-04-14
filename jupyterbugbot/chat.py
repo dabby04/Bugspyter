@@ -3,7 +3,7 @@ import sys
 
 warnings.filterwarnings("ignore")
 from pprint import pprint
-
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_community.document_loaders.generic import GenericLoader
 from langchain_community.document_loaders import NotebookLoader
 from langchain_community.document_loaders.parsers import LanguageParser
@@ -40,10 +40,16 @@ def request_api_key(api_key):
     """
     if not api_key:
         return "API key not initialised"
-    os.environ["GROQ_API_KEY"] = api_key
+    os.environ["GOOGLE_API_KEY"] = api_key
     try:
         global llm
-        llm=ChatGroq(model="llama3-8b-8192",max_retries=3) #initialising llm
+        llm = ChatGoogleGenerativeAI(
+            model="gemini-2.0-flash",
+            temperature=0,
+            max_tokens=None,
+            timeout=None,
+            max_retries=3,
+            ) #initialising llm
     except:
         return("Could not initialise LLM")
     return "LLM initialised"
@@ -52,14 +58,6 @@ def load_notebook(argument):
     """
     Load the notebook content into the LLM and run all request calls
     """
-    # argument = sys.argv[1]  # Name of notebook being passed
-    # messages = [
-    # ("system", "You are a helpful translator. Translate the user sentence to French."),
-    # ("human", "I love programming.")
-    # ]
-    # res=llm.invoke(messages).content
-    # print(res)
-    # return(res)
     path=f"{argument}"
     loader = NotebookLoader(
     path,
@@ -68,6 +66,18 @@ def load_notebook(argument):
 )
     docs=loader.load_and_split()
     content = docs
+    
+    def buggy_or_not(state: MessagesState):
+        """
+        Sets up conversational memory with LLM
+        """
+        
+        system_message= """You are a reviewer for computational notebooks.
+        Answer all questions to the best of your ability concerning this notebook"""
+        messages = [SystemMessage(content=system_message)] + state["messages"]
+        response = llm.invoke(messages)
+
+        return {"messages": response}
     
     workflow = StateGraph(state_schema=MessagesState)
     # Define the node and edge
@@ -81,8 +91,8 @@ def load_notebook(argument):
     global config
     config={"configurable": {"thread_id": "1"}}
     
-    for content in content:
-        app.invoke({"messages":[HumanMessage(content=content.page_content)]
+    for contentChunks in content:
+        app.invoke({"messages":[HumanMessage(content=contentChunks.page_content)]
                     },config,)
         
     res=app.invoke({"messages":[HumanMessage(content="Is the notebook I provided earlier buggy? Please answer my question only with Yes or No. Please make sure that the answer provided is only in one word")]
@@ -96,18 +106,10 @@ Please respond only with one bug out of the list if the notebook is buggy""")]},
     major_bug=res
     
     res=app.invoke({"messages":[HumanMessage(content="""You specifically identify the root causes for bugs in computational notebooks.
-The root causes you choose are from this list:
-1. Install and Configuration problems
-2. Version problems
-3. Deprecation
-4. Permission denied
-5. Time Out
-6. Memory error
-7. Coding error
-8. Logic error
-9. Hardware software limitations
-10. Unknown
+The root causes you choose are from this list: Install and Configuration problems, Version problems, Deprecation, Permission denied
+, Time Out, Memory error, Coding error, Logic error, Hardware software limitations, and  Unknown
 If you said the notebook was buggy, please respond only with a root cause from this list and the reason why in a sentence.""")]},config,)["messages"][-1].content
+    
     root_cause=res
     result=json.dumps({"buggy_or_not": buggy,"major_bug":major_bug,"root_cause":root_cause})
     return(result)
@@ -117,31 +119,16 @@ def analysis():
     Runs the analysis using agent tools
     """
     tools=[code_quality,security_and_confidentiality,resource_management,exception_error,dependency_env]
-    agent= langgraph_agent_executor = create_react_agent(
-    llm, tools,checkpointer=memory)
-    query= f"I asked you earlier if the notebook was buggy, what was your reply? If your reply was yes, conduct a bug and vulnerability analysis using the tools (not limited to): code_quality,security_and_confidentiality,resource_management,exception_error,dependency_env. Also provide code fixes where necessary"
-    inputs={"messages":[("user",query)]}
-    message=agent.invoke(inputs,config)["messages"][-1].content
-    return(message)
-
-
-
-def buggy_or_not(state: MessagesState):
-    """
-    Sets up conversational memory with LLM
-    """
-       
-    system_message= """You are a reviewer for computational notebooks.
-    Answer all questions to the best of your ability concerning this notebook"""
-    messages = [SystemMessage(content=system_message)] + state["messages"]
-    response = llm.invoke(messages)
-
-    return {"messages": response}
+    agent= create_react_agent(llm, tools,checkpointer=memory)
+    query= f"I asked you earlier if the notebook was buggy, what was your reply? If your reply was yes, conduct a bug and vulnerability analysis using the tools (not limited to): code_quality, security_and_confidentiality,resource_management,exception_error,dependency_env. Also provide code fixes where necessary. use tools"
+    inputs={"messages":[("human",query)]}
+    message= agent.invoke(inputs,config)
+    return(message["messages"][-1].content)
 
 
 @tool
 def code_quality(notebook:str) -> str:
-    """Returns suggestions on code quality issues to improve in the noteboook"""
+    """Returns suggestions on code quality issues to improve in the notebook"""
     system_message= """You are a reviewer for computational notebooks.
     You specifically review code smells, code defects, and cell defects within these notebooks.
     For code smells, you look at things such as lack of visualisations, inadequate visualisations for data cleaning or exploration, wrong library usage, algorithm errors.
@@ -158,7 +145,7 @@ def code_quality(notebook:str) -> str:
 
 @tool
 def security_and_confidentiality(notebook:str) -> str:
-    """Returns suggestions on security issues to improve in the noteboook"""
+    """Returns suggestions on security issues/vulnerabilities to improve in the notebook"""
     system_message= """You are a reviewer for computational notebooks.
     You specifically handle the security and confidentiality issues for notebooks which include information leakage and input validation and sanitisation.
     For issues in information leakage, you might look at security issues and lack of data confidentiality.
@@ -175,7 +162,7 @@ def security_and_confidentiality(notebook:str) -> str:
 @tool
 #Need a tool that handles resources
 def resource_management(notebook:str) -> str:
-    """Returns suggestions on possible leaks in the noteboook"""
+    """Returns suggestions on possible leaks in the notebook"""
     system_message= """You are a reviewer for computational notebooks.
     You specifically handle resource management of the notebook such as file handle leaks, socket handle leaks, memory leaks, and resource exhaustion. 
     You respond only with feedback and suggestions to fix."""
@@ -190,7 +177,7 @@ def resource_management(notebook:str) -> str:
 @tool
 # Need a tool that handles exceptions and errors
 def exception_error(notebook:str) -> str:
-    """Returns suggestions on possible leaks in the noteboook"""
+    """Returns suggestions on possible exceptions and errors in the notebook"""
     system_message= """You are a reviewer for computational notebooks. 
     You specifically manage exception and error handling such as inadequate error handling or exceptions logic.
     You respond only with feedback and suggestions to fix."""
@@ -205,7 +192,7 @@ def exception_error(notebook:str) -> str:
 @tool
 # Need a tool that manages the dependency and environment
 def dependency_env(notebook:str) -> str:
-    """Returns suggestions on possible leaks in the noteboook"""
+    """Returns suggestions on possible dependency problems in the notebook"""
     system_message= """You are a reviewer for computational notebooks.
     You handle dependency issues and environment management issues in the notebook. 
     You respond only with feedback and suggestions to fix."""

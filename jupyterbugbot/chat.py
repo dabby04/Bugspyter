@@ -4,6 +4,7 @@ import sys
 warnings.filterwarnings("ignore")
 from pprint import pprint
 from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_groq import ChatGroq
 from langchain_community.document_loaders.generic import GenericLoader
 from langchain_community.document_loaders import NotebookLoader
 from langchain_community.document_loaders.parsers import LanguageParser
@@ -13,7 +14,6 @@ import json
 from langchain import hub
 from langchain_core.messages import HumanMessage
 import os
-from langchain_groq import ChatGroq
 from langchain_core.tools import tool
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from langchain_core.prompts import PromptTemplate,ChatPromptTemplate,FewShotChatMessagePromptTemplate, MessagesPlaceholder
@@ -24,8 +24,22 @@ from langgraph.errors import GraphRecursionError
 from langchain_core.output_parsers import PydanticOutputParser
 from pydantic import BaseModel, Field, model_validator
 from langgraph.checkpoint.memory import MemorySaver
-from langgraph.graph import START, MessagesState, StateGraph
+from langgraph.graph import START, MessagesState, StateGraph, END
+from langgraph.prebuilt import ToolNode
+from langchain_core.runnables import RunnableConfig
+from typing import (
+    Annotated,
+    Sequence,
+    TypedDict,
+)
+from langchain_core.messages import BaseMessage
+from langgraph.graph.message import add_messages
 from IPython.display import display, Markdown
+
+class AgentState(TypedDict):
+    """The state of the agent."""
+    messages: Annotated[Sequence[BaseMessage], add_messages]
+
 
 llm = None
 memory=None
@@ -119,10 +133,57 @@ def analysis():
     Runs the analysis using agent tools
     """
     tools=[code_quality,security_and_confidentiality,resource_management,exception_error,dependency_env]
-    agent= create_react_agent(llm, tools,checkpointer=memory)
-    query= f"I asked you earlier if the notebook was buggy, what was your reply? If your reply was yes, conduct a bug and vulnerability analysis using the tools (not limited to): code_quality, security_and_confidentiality,resource_management,exception_error,dependency_env. Also provide code fixes where necessary. use tools"
+    tool_node = ToolNode(tools)
+    llm_with_tools = llm.bind_tools(tools)
+    
+    def call_model(
+    state: AgentState,
+    config: RunnableConfig,
+    ):
+        # this is similar to customizing the create_react_agent with 'prompt' parameter, but is more flexible
+        system_prompt = SystemMessage(
+            "You are a helpful AI assistant, please respond to the users query to the best of your ability!"
+        )
+        response = llm.invoke([system_prompt] + state["messages"], config)
+        # We return a list, because this will get added to the existing list
+        return {"messages": [response]}
+
+    # Define the conditional edge that determines whether to continue or not
+    def should_continue(state: AgentState):
+        messages = state["messages"]
+        last_message = messages[-1]
+        # If there is no function call, then we finish
+        if not last_message.tool_calls:
+            return "end"
+        # Otherwise if there is, we continue
+        else:
+            return "continue"
+        
+    # Define a new graph
+    workflow2 = StateGraph(AgentState)
+    workflow2.add_node("agent", call_model)
+    workflow2.add_node("tools", tool_node)
+    workflow2.set_entry_point("agent")
+    # We now add a conditional edge
+    workflow2.add_conditional_edges(
+        "agent",
+        should_continue,
+        {
+            # If `tools`, then we call the tool node.
+            "continue": "tools",
+            # Otherwise we finish.
+            "end": END,
+        },
+    )
+
+    # We now add a normal edge from `tools` to `agent`.
+    # This means that after `tools` is called, `agent` node is called next.
+    workflow2.add_edge("tools", "agent")
+    graph = workflow2.compile(checkpointer=memory)
+    
+    query= f"Use tools to answer. I asked you earlier if the notebook was buggy, what was your reply? If your reply was yes, on the same notebook, conduct a bug and vulnerability analysis using the tools (not limited to): code_quality, security_and_confidentiality,resource_management,exception_error,dependency_env. Also provide code fixes where necessary."
     inputs={"messages":[("human",query)]}
-    message= agent.invoke(inputs,config)
+    message= graph.invoke(inputs,config)
     return(message["messages"][-1].content)
 
 

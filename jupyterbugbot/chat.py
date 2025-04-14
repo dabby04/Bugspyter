@@ -5,6 +5,9 @@ warnings.filterwarnings("ignore")
 from pprint import pprint
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_groq import ChatGroq
+from langchain_cohere import ChatCohere
+from langchain_nvidia_ai_endpoints import ChatNVIDIA
+from langchain_anthropic import ChatAnthropic
 from langchain_community.document_loaders.generic import GenericLoader
 from langchain_community.document_loaders import NotebookLoader
 from langchain_community.document_loaders.parsers import LanguageParser
@@ -48,24 +51,74 @@ config=None
 def test():
     return "Please work"
 
-def request_api_key(api_key):
+def request_api_key(selectedLLM,selectedModel,api_key):
     """
     Makes sure users API key is received and LLM is initialised
     """
     if not api_key:
         return "API key not initialised"
-    os.environ["GOOGLE_API_KEY"] = api_key
-    try:
-        global llm
-        llm = ChatGoogleGenerativeAI(
-            model="gemini-2.0-flash",
-            temperature=0,
-            max_tokens=None,
-            timeout=None,
-            max_retries=3,
-            ) #initialising llm
-    except:
-        return("Could not initialise LLM")
+    
+    global llm
+    if selectedLLM=='Anthropic':
+        os.environ["ANTHROPIC_API_KEY"] = api_key
+        try:
+            llm = ChatAnthropic(
+                model=selectedModel,
+                temperature=0,
+                max_tokens=None,
+                timeout=None,
+                max_retries=3,
+                ) #initialising llm
+        except:
+            return("Could not initialise LLM")
+    elif selectedLLM=='Cohere':
+        os.environ["COHERE_API_KEY"] = api_key
+        try:
+            llm = ChatCohere(
+                temperature=0,
+                max_tokens=None,
+                timeout=None,
+                max_retries=3,
+                ) #initialising llm
+        except:
+            return("Could not initialise LLM")
+    elif selectedLLM=='Groq':
+        os.environ["GROQ_API_KEY"] = api_key
+        try:
+            llm = ChatGroq(
+                model=selectedModel,
+                temperature=0,
+                max_tokens=None,
+                timeout=None,
+                max_retries=3,
+                ) #initialising llm
+        except:
+            return("Could not initialise LLM")
+    elif selectedLLM=='Nvidia':
+        os.environ["NVIDIA_API_KEY"] = api_key
+        try:
+            llm = ChatNVIDIA(
+                model=selectedModel,
+                temperature=0,
+                max_tokens=None,
+                timeout=None,
+                max_retries=3,
+                ) #initialising llm
+        except:
+            return("Could not initialise LLM")
+    else:
+        os.environ["GOOGLE_API_KEY"] = api_key
+        try:
+            llm = ChatGoogleGenerativeAI(
+                model=selectedModel,
+                temperature=0,
+                max_tokens=None,
+                timeout=None,
+                max_retries=3,
+                ) #initialising llm
+        except:
+            return("Could not initialise LLM")
+    
     return "LLM initialised"
 
 def load_notebook(argument):

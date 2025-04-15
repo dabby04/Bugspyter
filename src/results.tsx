@@ -29,6 +29,7 @@ function BugBotComponent(props: BugBotComponentProps) {
     const [key, setKey] = useState('');
     const [message, setMessage] = useState('');
     const [buggy_or_not, setBuggyorNot] = useState('');
+    const [buggy_or_not_final, setBuggyorNotFinal] = useState('');
     const [bugtype, setBugType] = useState('');
     const [rootCause, setRootCause] = useState('');
     const [analysis, setAnalysis] = useState('');
@@ -101,6 +102,7 @@ function BugBotComponent(props: BugBotComponentProps) {
             })
                 .then(reply => {
                     setBuggyorNot(reply.buggy_or_not),
+                    setBuggyorNotFinal(reply.buggy_or_not_final),
                         setBugType(reply.major_bug),
                         setRootCause(reply.root_cause)
                 })
@@ -203,6 +205,8 @@ function BugBotComponent(props: BugBotComponentProps) {
                     (<div className="jp-Examplewidget"><h4>{message}</h4>
                         <div><h3>Is the Notebook buggy?</h3></div>
                         <body>{buggy_or_not}</body>
+                        <div><h3>After seeing the security report, is the notebook buggy?</h3></div>
+                        <body>{buggy_or_not_final}</body>
                         <div><h3>What major bug type is in the notebook?</h3></div>
                         <body>{bugtype}</body>
                         <div><h3>What is the root cause of bugs in the notebook?</h3></div>

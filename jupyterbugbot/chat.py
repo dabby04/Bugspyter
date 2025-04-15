@@ -38,6 +38,7 @@ from typing import (
 from langchain_core.messages import BaseMessage
 from langgraph.graph.message import add_messages
 from IPython.display import display, Markdown
+from .bandit import run_bandit
 
 class AgentState(TypedDict):
     """The state of the agent."""
@@ -134,6 +135,8 @@ def load_notebook(argument):
     docs=loader.load_and_split()
     content = docs
     
+    bandit_report= run_bandit(argument)
+    
     def buggy_or_not(state: MessagesState):
         """
         Sets up conversational memory with LLM
@@ -161,11 +164,15 @@ def load_notebook(argument):
     for contentChunks in content:
         app.invoke({"messages":[HumanMessage(content=contentChunks.page_content)]
                     },config,)
-        
     res=app.invoke({"messages":[HumanMessage(content="Is the notebook I provided earlier buggy? Please answer my question only with Yes or No. Please make sure that the answer provided is only in one word")]
                 },config,)["messages"][-1].content
    
     buggy=res
+    
+    buggy2=app.invoke({"messages":[HumanMessage(content=f"This is a security report produced by Bandit: {bandit_report}"),
+                                   HumanMessage(content="Is the notebook I provided earlier buggy? Please answer my question only with Yes or No. Please make sure that the answer provided is only in one word")
+                                   ]},config)["messages"][-1].content   
+    
     
     res=app.invoke({"messages":[HumanMessage(content="""If you said the notebook was buggy, out of these bugs, what is the major bug in this computational notebook?
 List of bugs: Kernel, Conversion, Portability, Environments and Settings, Connection, Processing, Cell Defect, and Implementation
@@ -178,7 +185,7 @@ The root causes you choose are from this list: Install and Configuration problem
 If you said the notebook was buggy, please respond only with a root cause from this list and the reason why in a sentence.""")]},config,)["messages"][-1].content
     
     root_cause=res
-    result=json.dumps({"buggy_or_not": buggy,"major_bug":major_bug,"root_cause":root_cause})
+    result=json.dumps({"buggy_or_not": buggy,"buggy_or_not_final":buggy2,"major_bug":major_bug,"root_cause":root_cause})
     return(result)
 
 def analysis():

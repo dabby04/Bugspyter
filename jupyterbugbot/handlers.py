@@ -41,6 +41,7 @@ class NotebookHandler(APIHandler):
         data=input_data["notebook_path"]
         result = json.loads(load_notebook(data))
         self.finish(json.dumps({
+            "buggy_or_not_final": result["buggy_or_not_final"],
             "buggy_or_not": result["buggy_or_not"],
             "major_bug": result["major_bug"],
             "root_cause":result["root_cause"],

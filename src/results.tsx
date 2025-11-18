@@ -4,7 +4,7 @@ import { requestAPI } from './handler';
 import React, { useState, useEffect } from 'react';
 import Markdown from 'markdown-to-jsx';
 
-export class BugBotWidget extends ReactWidget {
+export class BugspyterWidget extends ReactWidget {
     private notebook_path: string;
 
     constructor(notebook_path: string) {
@@ -14,16 +14,16 @@ export class BugBotWidget extends ReactWidget {
 
     render(): JSX.Element {
         return (
-            <BugBotComponent notebook_path={this.notebook_path} />
+            <BugspyterComponent notebook_path={this.notebook_path} />
         );
     }
 }
 
-interface BugBotComponentProps {
+interface BugspyterComponentProps {
     notebook_path: string;
 }
 
-function BugBotComponent(props: BugBotComponentProps) {
+function BugspyterComponent(props: BugspyterComponentProps) {
     const [showForm, setShowForm] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
     const [key, setKey] = useState('');
@@ -33,6 +33,7 @@ function BugBotComponent(props: BugBotComponentProps) {
     const [bugtype, setBugType] = useState('');
     const [rootCause, setRootCause] = useState('');
     const [analysis, setAnalysis] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
     type LLMOptions = {
         [dict_key: string]: string[]
@@ -81,54 +82,51 @@ function BugBotComponent(props: BugBotComponentProps) {
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-
+        setErrorMessage('');
         setIsLoading(true);
-        try {
-            await requestAPI<any>('request_api', {
-                body: JSON.stringify({"selectedLLM":selectedLLM,"selectedModel":selectedModel, "key": key }),
-                method: 'POST'
-            })
-                .then(reply => {
-                    setMessage(reply.result)
-                })
-                .catch(reason => {
-                    console.error(
-                        `Error on POST /jupyterlab-examples-server/jupyterbugbot`
-                    );
-                });
-            await requestAPI<any>('load_notebook', {
-                body: JSON.stringify({ "notebook_path": path }),
-                method: 'POST'
-            })
-                .then(reply => {
-                    setBuggyorNot(reply.buggy_or_not),
-                    setBuggyorNotFinal(reply.buggy_or_not_final),
-                        setBugType(reply.major_bug),
-                        setRootCause(reply.root_cause)
-                })
-                .catch(reason => {
-                    console.error(
-                        `Error on POST /jupyterlab-examples-server/jupyterbugbot`
-                    );
-                });
-            await requestAPI<any>('analysis')
-                .then(reply => {
-                    setAnalysis(reply.result);
-                })
-                .catch(reason => {
-                    console.error(
-                        `The jupyterlab_examples_server server extension appears to be missing.\n${reason}`
-                    );
-                });
-        }
-        catch (error) {
-            // Handle errors
-            console.error('Error submitting form:', error);
-        } finally {
-            setIsLoading(false); // Reset loading state to false
-            setShowForm(false);
-        }
 
+        try {
+            // 1) Initialize LLM with API key
+            const initReply = await requestAPI<any>('request_api', {
+                body: JSON.stringify({
+                    selectedLLM,
+                    selectedModel,
+                    key
+                }),
+                method: 'POST'
+            });
+
+            setMessage(initReply.result);
+
+            // Guard: stop if LLM not initialized
+            if (initReply.result !== 'LLM initialised') {
+                setErrorMessage(initReply.result || 'API key not initialised');
+                return; // Keep form visible; do not proceed
+            }
+
+            // 2) Load notebook only after successful init
+            const nbReply = await requestAPI<any>('load_notebook', {
+                body: JSON.stringify({ notebook_path: path }),
+                method: 'POST'
+            });
+            setBuggyorNot(nbReply.buggy_or_not);
+            setBuggyorNotFinal(nbReply.buggy_or_not_final);
+            setBugType(nbReply.major_bug);
+            setRootCause(nbReply.root_cause);
+
+            // 3) Run analysis
+            const analysisReply = await requestAPI<any>('analysis');
+            setAnalysis(analysisReply.result);
+
+            // Only now switch to results view
+            setShowForm(false);
+        } catch (error: any) {
+            console.error('Error submitting form:', error);
+            setErrorMessage(String(error?.message ?? error));
+            return;
+        } finally {
+            setIsLoading(false);
+        }
     }
     return (
         <body id="main">
@@ -198,6 +196,12 @@ function BugBotComponent(props: BugBotComponentProps) {
                                 <button type="submit" disabled={isLoading || !key}>
                                     Submit
                                 </button>
+                            </div>
+                        )}
+                        {errorMessage && (
+                            <div className="jp-Error">
+                                <h4>Error</h4>
+                                <body>{String(errorMessage)}</body>
                             </div>
                         )}
                     </form>

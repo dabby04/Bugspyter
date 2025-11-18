@@ -1,10 +1,10 @@
-# a mybinder.org-ready environment for demoing jupyterbugbot
+# a mybinder.org-ready environment for demoing bugspyter
 # this environment may also be used locally on Linux/MacOS/Windows, e.g.
 #
 #   conda env update --file binder/environment.yml
-#   conda activate jupyterbugbot-demo
+#   conda activate bugspyter-demo
 #
-name: jupyterbugbot-demo
+name: bugspyter-demo
 
 channels:
   - conda-forge

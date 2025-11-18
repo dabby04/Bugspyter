@@ -1,13 +1,13 @@
 # Bugspyter
 
-[![Github Actions Status](https://github.com/github_username/jupyterbugbot/workflows/Build/badge.svg)](https://github.com/github_username/jupyterbugbot/actions/workflows/build.yml)
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/github_username/jupyterbugbot/main?urlpath=lab)
+[![Github Actions Status](https://github.com/github_username/bugspyter/workflows/Build/badge.svg)](https://github.com/github_username/bugspyter/actions/workflows/build.yml)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/github_username/bugspyter/main?urlpath=lab)
 
 
 A JupyterLab extension that uses AI agents to detect buggy and vulnerable code.
 
-This extension is composed of a Python package named `jupyterbugbot`
-for the server extension and a NPM package named `jupyterbugbot`
+This extension is composed of a Python package named `bugspyter`
+for the server extension and a NPM package named `bugspyter`
 for the frontend extension.
 
 ![ToolDemo](https://github.com/user-attachments/assets/2a13fe1e-e2e1-47b4-9907-976ef18fb30d)
@@ -22,7 +22,7 @@ for the frontend extension.
 To install the extension, execute:
 
 ```bash
-pip install jupyterbugbot
+pip install bugspyter
 ```
 
 ## Uninstall
@@ -30,7 +30,7 @@ pip install jupyterbugbot
 To remove the extension, execute:
 
 ```bash
-pip uninstall jupyterbugbot
+pip uninstall bugspyter
 ```
 
 ## Troubleshoot
@@ -55,7 +55,7 @@ If you see the frontend extension, but it is not working, check that the server 
 ```
 jupyter serverextension list
 ```
-## Server extension is installed and enables, but jupyterbugbot does not appear
+## Server extension is installed and enables, but bugspyter does not appear
 
 If the server extension is installed and enabled, but you are not seeing the frontend, check the frontend is installed:
 
@@ -81,13 +81,13 @@ The `jlpm` command is JupyterLab's pinned version of
 
 ```bash
 # Clone the repo to your local environment
-# Change directory to the jupyterbugbot directory
+# Change directory to the bugspyter directory
 # Install package in development mode
 pip install -e ".[test]"
 # Link your development version of the extension with JupyterLab
 jupyter labextension develop . --overwrite
 # Server extension must be manually installed in develop mode
-jupyter server extension enable jupyterbugbot
+jupyter server extension enable bugspyter
 # Rebuild extension Typescript source after making changes
 jlpm build
 ```
@@ -113,13 +113,13 @@ jupyter lab build --minimize=False
 
 ```bash
 # Server extension must be manually disabled in develop mode
-jupyter server extension disable jupyterbugbot
-pip uninstall jupyterbugbot
+jupyter server extension disable bugspyter
+pip uninstall bugspyter
 ```
 
 In development mode, you will also need to remove the symlink created by `jupyter labextension develop`
 command. To find its location, you can run `jupyter labextension list` to figure out where the `labextensions`
-folder is located. Then you can remove the symlink named `jupyterbugbot` within that folder.
+folder is located. Then you can remove the symlink named `bugspyter` within that folder.
 
 ### Testing the extension
 
@@ -138,7 +138,7 @@ jupyter labextension develop . --overwrite
 To execute them, run:
 
 ```sh
-pytest -vv -r ap --cov jupyterbugbot
+pytest -vv -r ap --cov bugspyter
 ```
 
 #### Frontend tests

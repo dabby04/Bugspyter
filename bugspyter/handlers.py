@@ -17,7 +17,7 @@ class RouteHandler(APIHandler):
     def get(self):
         # result=test()
         self.finish(json.dumps({
-            "data": "This is /jupyterbugbot/get-example endpoint!",
+            "data": "This is /bugspyter/get-example endpoint!",
             "result": test()
         }))
 
@@ -30,7 +30,7 @@ class ConfigHandler(APIHandler):
         key=input_data["key"]
         result=request_api_key(selectedLLM,selectedModel,key)
         self.finish(json.dumps({
-            "data": "This is /jupyterbugbot/get-example endpoint!",
+            "data": "This is /bugspyter/get-example endpoint!",
             "result": result
         }))
 
@@ -59,10 +59,10 @@ def setup_handlers(web_app):
     host_pattern = ".*$"
 
     base_url = web_app.settings["base_url"]
-    route_pattern1 = url_path_join(base_url, "jupyterbugbot", "get-example")
-    route_pattern2=url_path_join(base_url,"jupyterbugbot","request_api")
-    route_pattern3=url_path_join(base_url,"jupyterbugbot","load_notebook")
-    route_pattern4=url_path_join(base_url,"jupyterbugbot","analysis")
+    route_pattern1 = url_path_join(base_url, "bugspyter", "get-example")
+    route_pattern2=url_path_join(base_url,"bugspyter","request_api")
+    route_pattern3=url_path_join(base_url,"bugspyter","load_notebook")
+    route_pattern4=url_path_join(base_url,"bugspyter","analysis")
     handlers = [(route_pattern1, RouteHandler),(route_pattern2, ConfigHandler),(route_pattern3, NotebookHandler),(route_pattern4, AnalysisHandler)]
     web_app.add_handlers(host_pattern, handlers)
     

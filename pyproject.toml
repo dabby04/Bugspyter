@@ -3,7 +3,7 @@ requires = ["hatchling>=1.5.0", "jupyterlab>=4.0.0,<5", "hatch-nodejs-version>=0
 build-backend = "hatchling.build"
 
 [project]
-name = "jupyterbugbot"
+name = "bugspyter"
 readme = "README.md"
 license = { file = "LICENSE" }
 requires-python = ">=3.9"
@@ -43,25 +43,25 @@ source = "nodejs"
 fields = ["description", "authors", "urls", "keywords"]
 
 [tool.hatch.build.targets.sdist]
-artifacts = ["jupyterbugbot/labextension"]
+artifacts = ["bugspyter/labextension"]
 exclude = [".github", "binder"]
 
 [tool.hatch.build.targets.wheel.shared-data]
-"jupyterbugbot/labextension" = "share/jupyter/labextensions/jupyterbugbot"
-"install.json" = "share/jupyter/labextensions/jupyterbugbot/install.json"
+"bugspyter/labextension" = "share/jupyter/labextensions/bugspyter"
+"install.json" = "share/jupyter/labextensions/bugspyter/install.json"
 "jupyter-config/server-config" = "etc/jupyter/jupyter_server_config.d"
 
 [tool.hatch.build.hooks.version]
-path = "jupyterbugbot/_version.py"
+path = "bugspyter/_version.py"
 
 [tool.hatch.build.hooks.jupyter-builder]
 dependencies = ["hatch-jupyter-builder>=0.5"]
 build-function = "hatch_jupyter_builder.npm_builder"
 ensured-targets = [
-    "jupyterbugbot/labextension/static/style.js",
-    "jupyterbugbot/labextension/package.json",
+    "bugspyter/labextension/static/style.js",
+    "bugspyter/labextension/package.json",
 ]
-skip-if-exists = ["jupyterbugbot/labextension/static/style.js"]
+skip-if-exists = ["bugspyter/labextension/static/style.js"]
 
 [tool.hatch.build.hooks.jupyter-builder.build-kwargs]
 build_cmd = "build:prod"
@@ -71,7 +71,7 @@ npm = ["jlpm"]
 build_cmd = "install:extension"
 npm = ["jlpm"]
 source_dir = "src"
-build_dir = "jupyterbugbot/labextension"
+build_dir = "bugspyter/labextension"
 
 [tool.jupyter-releaser.options]
 version_cmd = "hatch version"

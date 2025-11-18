@@ -70,6 +70,7 @@ def request_api_key(selectedLLM,selectedModel,api_key):
                 timeout=None,
                 max_retries=3,
                 ) #initialising llm
+            llm.invoke("Hello")
         except:
             return("Could not initialise LLM")
     elif selectedLLM=='Cohere':
@@ -81,6 +82,7 @@ def request_api_key(selectedLLM,selectedModel,api_key):
                 timeout=None,
                 max_retries=3,
                 ) #initialising llm
+            llm.invoke("Hello")
         except:
             return("Could not initialise LLM")
     elif selectedLLM=='Groq':
@@ -93,6 +95,7 @@ def request_api_key(selectedLLM,selectedModel,api_key):
                 timeout=None,
                 max_retries=3,
                 ) #initialising llm
+            llm.invoke("Hello")
         except:
             return("Could not initialise LLM")
     elif selectedLLM=='Nvidia':
@@ -105,6 +108,7 @@ def request_api_key(selectedLLM,selectedModel,api_key):
                 timeout=None,
                 max_retries=3,
                 ) #initialising llm
+            llm.invoke("Hello")
         except:
             return("Could not initialise LLM")
     else:
@@ -117,6 +121,7 @@ def request_api_key(selectedLLM,selectedModel,api_key):
                 timeout=None,
                 max_retries=3,
                 ) #initialising llm
+            llm.invoke("Hello")
         except:
             return("Could not initialise LLM")
     

@@ -1,56 +1,41 @@
+from typing import Literal
 import warnings
 import sys
 
 warnings.filterwarnings("ignore")
 from pprint import pprint
+import json
+import os
+from pydantic import BaseModel, Field, model_validator
+
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_groq import ChatGroq
-from langchain_cohere import ChatCohere
+from langchain_community.chat_models import ChatCohere
 from langchain_nvidia_ai_endpoints import ChatNVIDIA
 from langchain_anthropic import ChatAnthropic
-from langchain_community.document_loaders.generic import GenericLoader
+
 from langchain_community.document_loaders import NotebookLoader
-from langchain_community.document_loaders.parsers import LanguageParser
-from langchain.output_parsers import BooleanOutputParser,ResponseSchema, StructuredOutputParser
-from langchain_text_splitters import Language
-import json
-from langchain import hub
-from langchain_core.messages import HumanMessage
-import os
-from langchain_core.tools import tool
-from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
+
+from langchain.tools import tool
+from langchain.messages import HumanMessage, SystemMessage, ToolMessage
 from langchain_core.prompts import PromptTemplate,ChatPromptTemplate,FewShotChatMessagePromptTemplate, MessagesPlaceholder
-from langchain.agents import AgentExecutor, create_tool_calling_agent
-from langchain.chains import LLMChain
-from langgraph.prebuilt import create_react_agent
-from langgraph.errors import GraphRecursionError
-from langchain_core.output_parsers import PydanticOutputParser
-from pydantic import BaseModel, Field, model_validator
+
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import START, MessagesState, StateGraph, END
-from langgraph.prebuilt import ToolNode
-from langchain_core.runnables import RunnableConfig
-from typing import (
-    Annotated,
-    Sequence,
-    TypedDict,
-)
-from langchain_core.messages import BaseMessage
+
 from langgraph.graph.message import add_messages
+
 from IPython.display import display, Markdown
 from .bandit import run_bandit
 
-class AgentState(TypedDict):
-    """The state of the agent."""
-    messages: Annotated[Sequence[BaseMessage], add_messages]
+# class AgentState(TypedDict):
+#     """The state of the agent."""
+#     messages: Annotated[Sequence[BaseMessage], add_messages]
 
 
 llm = None
-memory=None
-config=None
-
-def test():
-    return "Please work"
+memory=MemorySaver()
+config={"configurable": {"thread_id": "1"}}
 
 def request_api_key(selectedLLM,selectedModel,api_key):
     """
@@ -159,12 +144,8 @@ def load_notebook(argument):
     workflow.add_node("model", buggy_or_not)
     workflow.add_edge(START, "model")
 
-    # Add simple in-memory checkpointer
-    global memory
-    memory = MemorySaver()
+    # compile with memory
     app = workflow.compile(checkpointer=memory)
-    global config
-    config={"configurable": {"thread_id": "1"}}
     
     for contentChunks in content:
         app.invoke({"messages":[HumanMessage(content=contentChunks.page_content)]
@@ -198,58 +179,90 @@ def analysis():
     Runs the analysis using agent tools
     """
     tools=[code_quality,security_and_confidentiality,resource_management,exception_error,dependency_env]
-    tool_node = ToolNode(tools)
+    tools_by_name = {tool.name: tool for tool in tools}
     llm_with_tools = llm.bind_tools(tools)
     
-    def call_model(
-    state: AgentState,
-    config: RunnableConfig,
-    ):
-        # this is similar to customizing the create_react_agent with 'prompt' parameter, but is more flexible
-        system_prompt = SystemMessage(
-            "You are a helpful AI assistant, please respond to the users query to the best of your ability!"
-        )
-        response = llm.invoke([system_prompt] + state["messages"], config)
-        # We return a list, because this will get added to the existing list
-        return {"messages": [response]}
+    # Nodes
+    def llm_call(state: MessagesState):
+        """LLM decides whether to call a tool or not"""
 
-    # Define the conditional edge that determines whether to continue or not
-    def should_continue(state: AgentState):
+        return {
+            "messages": [
+                llm_with_tools.invoke(
+                    [
+                        SystemMessage(
+                            # content="""
+                            # You are a helpful assistant who identifies and fixes code bugs in computational notebooks, providing both explanations and corrected code.
+                            # """
+                            content="""
+                            You are a notebook diagnostics assistant.
+                            You have access to these tools: code_quality, security_and_confidentiality, resource_management, exception_error, dependency_env.
+                            Rules:
+                            - Call ONLY the tools strictly relevant to the current user query and available context.
+                            - Do NOT call a tool if its domain is not clearly implicated.
+                            - Maximum 2 tools per turn unless absolutely necessary.
+                            If no tool is needed, just answer directly.
+                            """
+                        )
+                    ]
+                    + state["messages"]
+                )
+            ]
+        }
+    
+    # Custom ToolNode
+    def tool_node(state: dict):
+        """Performs the tool call"""
+
+        result = []
+        for tool_call in state["messages"][-1].tool_calls:
+            tool = tools_by_name[tool_call["name"]]
+            observation = tool.invoke(tool_call["args"])
+            result.append(ToolMessage(content=observation, tool_call_id=tool_call["id"]))
+        return {"messages": result}
+    
+    # Conditional edge function to route to the tool node or end based upon whether the LLM made a tool call
+    def should_continue(state: MessagesState) -> Literal["tool_node", END]:
+        """Decide if we should continue the loop or stop based upon whether the LLM made a tool call"""
+
         messages = state["messages"]
         last_message = messages[-1]
-        # If there is no function call, then we finish
-        if not last_message.tool_calls:
-            return "end"
-        # Otherwise if there is, we continue
-        else:
-            return "continue"
-        
-    # Define a new graph
-    workflow2 = StateGraph(AgentState)
-    workflow2.add_node("agent", call_model)
-    workflow2.add_node("tools", tool_node)
-    workflow2.set_entry_point("agent")
-    # We now add a conditional edge
-    workflow2.add_conditional_edges(
-        "agent",
-        should_continue,
-        {
-            # If `tools`, then we call the tool node.
-            "continue": "tools",
-            # Otherwise we finish.
-            "end": END,
-        },
-    )
 
-    # We now add a normal edge from `tools` to `agent`.
-    # This means that after `tools` is called, `agent` node is called next.
-    workflow2.add_edge("tools", "agent")
-    graph = workflow2.compile(checkpointer=memory)
+        # If the LLM makes a tool call, then perform an action
+        if last_message.tool_calls:
+            return "tool_node"
+
+        # Otherwise, we stop (reply to the user)
+        return END
     
-    query= f"Use tools to answer. I asked you earlier if the notebook was buggy, what was your reply? If your reply was yes, on the same notebook, conduct a bug and vulnerability analysis using the tools (not limited to): code_quality, security_and_confidentiality,resource_management,exception_error,dependency_env. Also provide code fixes where necessary."
-    inputs={"messages":[("human",query)]}
-    message= graph.invoke(inputs,config)
-    return(message["messages"][-1].content)
+    # Build workflow
+    agent_builder = StateGraph(MessagesState)
+
+    # Add nodes
+    agent_builder.add_node("llm_call", llm_call)
+    agent_builder.add_node("tool_node", tool_node)
+
+    # Add edges to connect nodes
+    agent_builder.add_edge(START, "llm_call")
+    agent_builder.add_conditional_edges(
+        "llm_call",
+        should_continue,
+        ["tool_node", END]
+    )
+    agent_builder.add_edge("tool_node", "llm_call")
+
+    # Compile the agent
+    agent = agent_builder.compile(checkpointer=memory)
+    
+    # query= f"Use tools to answer. I asked you earlier if the notebook was buggy, what was your reply? If your reply was yes, on the same notebook, conduct a bug and vulnerability analysis using the tools (not limited to): code_quality, security_and_confidentiality,resource_management,exception_error,dependency_env. Also provide code fixes where necessary."
+    query= """Using the notebook and any supporting information available (including summaries, security reports, or a runtime execution report if one exists), determine whether you previously assessed the notebook as buggy. 
+    If you did, produce a detailed bug and vulnerability analysis. 
+    Address any issues you identify across relevant dimensions such as correctness, security, confidentiality, resource handling, error management, and dependency or environment consistency. 
+    Only analyze areas that are applicable based on the information available. 
+    Provide explanations and corrected or improved code where appropriate."""
+    messages = [HumanMessage(content=query)]
+    messages = agent.invoke({"messages": messages},config)
+    return(messages["messages"][-1].content)
 
 
 @tool

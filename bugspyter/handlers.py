@@ -2,7 +2,6 @@ import json
 
 from jupyter_server.base.handlers import APIHandler
 from jupyter_server.utils import url_path_join
-from .chat import test
 from .chat import request_api_key
 from .chat import load_notebook
 from .chat import analysis
@@ -15,10 +14,8 @@ class RouteHandler(APIHandler):
     # Jupyter server
     @tornado.web.authenticated
     def get(self):
-        # result=test()
         self.finish(json.dumps({
             "data": "This is /bugspyter/get-example endpoint!",
-            "result": test()
         }))
 
 class ConfigHandler(APIHandler):

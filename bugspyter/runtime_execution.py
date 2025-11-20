@@ -52,7 +52,7 @@ def get_notebook_metadata(nb:nbformat.NotebookNode):
 
 def execute_notebook_linear(notebook_path):
     notebook_file_path = Path(notebook_path)
-    output = notebook_file_path.name +"_output.ipynb"
+    output = notebook_file_path.stem +"_output.ipynb"
     try:
         pm.execute_notebook(
             notebook_path,
@@ -101,5 +101,3 @@ def return_runtime_cells(nb:nbformat.NotebookNode):
             "outputs": cell.get("outputs", [])
         })
     return runtime_cells
-
-

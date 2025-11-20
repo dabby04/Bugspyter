@@ -146,3 +146,52 @@ def execute_notebook_user_order(nb:nbformat.NotebookNode, execution_order):
         pass
 
     return results
+
+def create_JSON_report(notebook_path: str):
+    """
+    Build a JSON-ready dict summarizing:
+      notebook_metadata
+      user_execution_order (replay)
+      linear_execution_order (papermill style)
+    Logic:
+      1. Load notebook + metadata.
+      2. Derive user execution order from execution_count.
+      3. If user-order exists, replay it.
+         - If any cell errors -> skip linear execution (set linear_execution_order=None).
+      4. If no user-order or no errors -> run linear execution.
+    """
+    nb = load_notebook(notebook_path)
+
+    # Metadata
+    metadata_list = get_notebook_metadata(nb)
+    notebook_metadata = metadata_list[0] if metadata_list else {}
+
+    # User execution order derived from existing execution_count
+    derived_order = get_execution_order(nb)
+
+    user_execution_results = []
+    user_error = False
+    user_execution_section = None
+
+    if derived_order:
+        user_execution_results = execute_notebook_user_order(nb, derived_order)
+        user_error = any(c.get("error") for c in user_execution_results)
+        user_execution_section = {
+            "enabled": True,
+            "execution_order_source": "execution_count",
+            "cells": user_execution_results,
+            "replay_halted_due_to_error": user_error
+        }
+
+    # Linear execution (only if no user error or no user order)
+    linear_execution_results = None
+    if not user_error:
+        linear_execution_results = execute_notebook_linear(notebook_path)
+
+    report = {
+        "notebook_metadata": notebook_metadata,
+        "user_execution_order": user_execution_section,
+        "linear_execution_order": linear_execution_results,
+        "execution_mode_triggered_bug": "user_replay" if user_error else "linear_execution"
+    }
+    return report

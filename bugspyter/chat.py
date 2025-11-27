@@ -1,4 +1,7 @@
-from typing import Literal
+# call request_api_key -> verify -> load_notebook_content -> load it into memory (build_memory with You are a reviewer for computational notebooks.
+    #     Answer all questions to the best of your ability concerning this notebook) -> load_notebook -> get_router ->
+    # if decision.step == runtime, runtime_execution, call decision again? then just call buggy_or_not...
+from typing import Literal, Optional, TypedDict
 import warnings
 import sys
 
@@ -17,16 +20,18 @@ from langchain_anthropic import ChatAnthropic
 from langchain_community.document_loaders import NotebookLoader
 
 from langchain.tools import tool
-from langchain.messages import HumanMessage, SystemMessage, ToolMessage
+from langchain.messages import HumanMessage, SystemMessage, ToolMessage, RemoveMessage
 from langchain_core.prompts import PromptTemplate,ChatPromptTemplate,FewShotChatMessagePromptTemplate, MessagesPlaceholder
 
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import START, MessagesState, StateGraph, END
 
 from langgraph.graph.message import add_messages
+from langchain_core.documents import Document
 
 from IPython.display import display, Markdown
 from .bandit import run_bandit
+from .runtime_execution import create_JSON_report
 
 # class AgentState(TypedDict):
 #     """The state of the agent."""
@@ -36,6 +41,22 @@ from .bandit import run_bandit
 llm = None
 memory=MemorySaver()
 config={"configurable": {"thread_id": "1"}}
+app = None
+
+class Route(BaseModel):
+    step: Literal["runtime", "analysis"] = Field(
+        None, description="The next step in the routing process"
+    )
+
+def get_router():
+    """ Create a structured-output router"""
+    return llm.with_structured_output(Route)
+
+class State(TypedDict):
+    input: str
+    decision: str
+    output: str
+    summary: Optional[str]
 
 def request_api_key(selectedLLM,selectedModel,api_key):
     """
@@ -112,68 +133,191 @@ def request_api_key(selectedLLM,selectedModel,api_key):
     
     return "LLM initialised"
 
-def load_notebook(argument):
+def load_notebook_content(notebook_path):
     """
     Load the notebook content into the LLM and run all request calls
     """
-    path=f"{argument}"
+    path=f"{notebook_path}"
     loader = NotebookLoader(
     path,
     include_outputs=True,
     max_output_length=20
 )
     docs=loader.load_and_split()
-    content = docs
+    docs_as_dict = [
+        {
+            "page_content": d.page_content,
+            "metadata": d.metadata
+        }
+        for d in docs
+    ]
+    bandit_report= run_bandit(notebook_path)
+    result = json.dumps({"docs":docs_as_dict,"bandit_report":bandit_report})
+    return result
+
+# def load_notebook(argument):
+#     """
+#     Load the notebook content into the LLM and run all request calls
+#     """
+#     path=f"{argument}"
+#     loader = NotebookLoader(
+#     path,
+#     include_outputs=True,
+#     max_output_length=20
+# )
+#     docs=loader.load_and_split()
+#     content = docs
     
-    bandit_report= run_bandit(argument)
+#     bandit_report= run_bandit(argument)
     
-    def buggy_or_not(state: MessagesState):
+    # def buggy_or_not(state: MessagesState):
+    #     """
+    #     Sets up conversational memory with LLM
+    #     """
+        
+    #     system_message= """You are a reviewer for computational notebooks.
+    #     Answer all questions to the best of your ability concerning this notebook"""
+    #     messages = [SystemMessage(content=system_message)] + state["messages"]
+    #     response = llm.invoke(messages)
+
+    #     return {"messages": response}
+def build_memory(system_message:str):
+    """Building Langgraph conversational memory"""
+    def llm_node(state: MessagesState):
         """
         Sets up conversational memory with LLM
         """
-        
-        system_message= """You are a reviewer for computational notebooks.
-        Answer all questions to the best of your ability concerning this notebook"""
         messages = [SystemMessage(content=system_message)] + state["messages"]
         response = llm.invoke(messages)
-
         return {"messages": response}
     
     workflow = StateGraph(state_schema=MessagesState)
     # Define the node and edge
-    workflow.add_node("model", buggy_or_not)
+    workflow.add_node("model", llm_node)
     workflow.add_edge(START, "model")
 
     # compile with memory
-    app = workflow.compile(checkpointer=memory)
-    
-    for contentChunks in content:
+    return workflow.compile(checkpointer=memory)
+
+def load_notebook( docs, bandit_report):
+    """Pass notebook and bandit report to the LLM"""
+    global app
+    app = build_memory("""You are a reviewer for computational notebooks. 
+                           Answer all questions to the best of your ability concerning this notebook.""")
+    docs_reconstructed = [
+        Document(
+            page_content=d["page_content"],
+            metadata=d["metadata"]
+        )
+        for d in docs
+    ]
+    for contentChunks in docs_reconstructed:
         app.invoke({"messages":[HumanMessage(content=contentChunks.page_content)]
                     },config,)
-    res=app.invoke({"messages":[HumanMessage(content="Is the notebook I provided earlier buggy? Please answer my question only with Yes or No. Please make sure that the answer provided is only in one word")]
-                },config,)["messages"][-1].content
-   
-    buggy=res
+    app.invoke({"messages": [HumanMessage(content=f"This is a security report produced by Bandit for the notebook: {bandit_report}")]},config)
     
-    buggy2=app.invoke({"messages":[HumanMessage(content=f"This is a security report produced by Bandit: {bandit_report}"),
-                                   HumanMessage(content="Is the notebook I provided earlier buggy? Please answer my question only with Yes or No. Please make sure that the answer provided is only in one word")
-                                   ]},config)["messages"][-1].content   
-    
-    
+def buggy_or_not(runtime_json: Optional[str]=None):
+    """Determine if the notebook is buggy, what is the bug type, and root cause"""
+    buggy=app.invoke({"messages":[
+                                HumanMessage(content=f"This is a runtime execution report (JSON); this runtime report could be empty; if it is empty, find it irrelevant: {runtime_json}"),
+                                HumanMessage(content="Is the notebook I provided earlier buggy? Please answer my question only with Yes or No. Please make sure that the answer provided is only in one word")
+                                ]},config)["messages"][-1].content
+        
     res=app.invoke({"messages":[HumanMessage(content="""If you said the notebook was buggy, out of these bugs, what is the major bug in this computational notebook?
 List of bugs: Kernel, Conversion, Portability, Environments and Settings, Connection, Processing, Cell Defect, and Implementation
 Please respond only with one bug out of the list if the notebook is buggy""")]},config,)["messages"][-1].content
     major_bug=res
-    
+
     res=app.invoke({"messages":[HumanMessage(content="""You specifically identify the root causes for bugs in computational notebooks.
 The root causes you choose are from this list: Install and Configuration problems, Version problems, Deprecation, Permission denied
 , Time Out, Memory error, Coding error, Logic error, Hardware software limitations, and  Unknown
 If you said the notebook was buggy, please respond only with a root cause from this list and the reason why in a sentence.""")]},config,)["messages"][-1].content
-    
     root_cause=res
-    result=json.dumps({"buggy_or_not": buggy,"buggy_or_not_final":buggy2,"major_bug":major_bug,"root_cause":root_cause})
+    
+    result=json.dumps({"buggy_or_not": buggy,"major_bug":major_bug,"root_cause":root_cause})
     return(result)
 
+# def generate_summary(notebook_path:str):
+#     """ Generate a summary of the notebook"""
+#     notebook= load_notebook(notebook_path)
+#     for contentChunks in notebook:
+#         llm.invoke({"messages":[HumanMessage(content=contentChunks.page_content)]
+#                     },config,)
+#     res=llm.invoke({"messages":[HumanMessage(content="Based on the notebook provided earlier, generate a summary for the notebook")]
+#                 },config,)["messages"][-1].content
+#     return res
+
+def summarize_conversation(state: State):
+    """Generate a summary of the conversation"""
+    # First, we get any existing summary
+    summary = state.get("summary", "")
+
+    # Create our summarization prompt
+    if summary:
+
+        # A summary already exists
+        summary_message = (
+            f"This is a summary of the conversation to date: {summary}\n\n"
+            "Extend the summary by taking into account the new messages above:"
+        )
+
+    else:
+        summary_message = "Create a summary of the conversation above:"
+
+    # Add prompt to our history
+    messages = state["messages"] + [HumanMessage(content=summary_message)]
+    response = llm.invoke(messages)
+
+    # Delete all but the 2 most recent messages
+    delete_messages = [RemoveMessage(id=m.id) for m in state["messages"][:-2]]
+    return {"summary": response.content, "messages": delete_messages}
+
+def runtime_execution(notebook_path:str):
+    """Call runtime execution tool on notebook and produce JSON runtime report"""
+    report = create_JSON_report(notebook_path)
+    return report
+
+def llm_call_router(state: State):
+    """Route the input to the appropriate node"""
+
+    # Run the augmented LLM with structured output to serve as routing logic
+    router = get_router()
+    decision = router.invoke(
+        [
+            SystemMessage(
+                content="From the notebook information and bandit report, decide if you need more information in finding the bug by running the runtime execution tool or routing to the analysis tools. Route this input to runtime or analysis based on your decision."
+            ),
+            HumanMessage(content=state["input"]),
+        ],config
+    )
+    return {"decision": decision.step}
+
+def route_decision(state: State):
+    # Return the node name you want to visit next
+    if state["decision"] == "runtime":
+        return "runtime_execution"
+    elif state["decision"] == "analysis":
+        return "analysis"
+    
+    
+def router_workflow(decision:str, notebook_path:str):
+    max_cycle = 3
+    cycle = 0
+    runtime_json = None
+    
+    while decision == "runtime" and cycle<max_cycle:
+        runtime_json = runtime_execution(notebook_path)
+        decision = llm_call_router({
+            "input": "Re-route after runtime execution using latest runtime context."
+        })["decision"]
+        cycle+=1
+    
+    buggy_questions= buggy_or_not(runtime_json)
+    tools = analysis()
+    
+    result= json.dumps({"buggy_questions": buggy_questions,"analysis":tools})
+    return result
+    
 def analysis():
     """
     Runs the analysis using agent tools

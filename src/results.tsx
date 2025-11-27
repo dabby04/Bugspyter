@@ -29,11 +29,12 @@ function BugspyterComponent(props: BugspyterComponentProps) {
     const [key, setKey] = useState('');
     const [message, setMessage] = useState('');
     const [buggy_or_not, setBuggyorNot] = useState('');
-    const [buggy_or_not_final, setBuggyorNotFinal] = useState('');
     const [bugtype, setBugType] = useState('');
     const [rootCause, setRootCause] = useState('');
     const [analysis, setAnalysis] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+    const [status, setStatus] = useState('');
+    const [decision_status,setDecisionStatus] = useState('');
 
     type LLMOptions = {
         [dict_key: string]: string[]
@@ -109,14 +110,27 @@ function BugspyterComponent(props: BugspyterComponentProps) {
                 body: JSON.stringify({ notebook_path: path }),
                 method: 'POST'
             });
-            setBuggyorNot(nbReply.buggy_or_not);
-            setBuggyorNotFinal(nbReply.buggy_or_not_final);
-            setBugType(nbReply.major_bug);
-            setRootCause(nbReply.root_cause);
+            setStatus(nbReply.status);
+            const decision = nbReply.decision;
+            if(decision == 'runtime'){
+                setDecisionStatus("Running runtime execution tool...")
+            }
+            else if(decision =='analysis'){
+                setDecisionStatus("Analysing notebook")
+            }
 
             // 3) Run analysis
-            const analysisReply = await requestAPI<any>('analysis');
-            setAnalysis(analysisReply.result);
+            const analysisReply = await requestAPI<any>('router_workflow',{
+                body: JSON.stringify({
+                    notebook_path: path,
+                    decision: decision
+                }),
+                method: 'POST'
+            });
+            setBuggyorNot(analysisReply.buggy_or_not);
+            setBugType(analysisReply.major_bug);
+            setRootCause(analysisReply.root_cause);
+            setAnalysis(analysisReply.analysis);
 
             // Only now switch to results view
             setShowForm(false);
@@ -192,7 +206,8 @@ function BugspyterComponent(props: BugspyterComponentProps) {
                                         disabled={isLoading}
                                     />
                                 </label>
-                                {isLoading && <p>Loading results...</p>}
+                                {isLoading && <p>{status}</p>}
+                                {isLoading && <p>{decision_status}</p>}
                                 <button type="submit" disabled={isLoading || !key}>
                                     Submit
                                 </button>
@@ -209,8 +224,6 @@ function BugspyterComponent(props: BugspyterComponentProps) {
                     (<div className="jp-Examplewidget"><h4>{message}</h4>
                         <div><h3>Is the Notebook buggy?</h3></div>
                         <body>{buggy_or_not}</body>
-                        <div><h3>After seeing the security report, is the notebook buggy?</h3></div>
-                        <body>{buggy_or_not_final}</body>
                         <div><h3>What major bug type is in the notebook?</h3></div>
                         <body>{bugtype}</body>
                         <div><h3>What is the root cause of bugs in the notebook?</h3></div>

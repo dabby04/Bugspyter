@@ -194,4 +194,5 @@ def create_JSON_report(notebook_path: str):
         "linear_execution_order": linear_execution_results,
         "execution_mode_triggered_bug": "user_replay" if user_error else "linear_execution"
     }
+    print(report)
     return report

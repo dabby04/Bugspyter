@@ -64,6 +64,7 @@ function BugspyterComponent(props: BugspyterComponentProps) {
             "llama3-8b-8192",
         ],
         Nvidia: ["deepseek-ai/deepseek-r1"],
+        Qwen: ["Qwen/Qwen2.5-Coder-32B-Instruct"],
         Gemini: [
             "gemini-3-pro-preview",
             "gemini-2.5-flash",

@@ -16,6 +16,8 @@ from langchain_groq import ChatGroq
 from langchain_community.chat_models import ChatCohere
 from langchain_nvidia_ai_endpoints import ChatNVIDIA
 from langchain_anthropic import ChatAnthropic
+from langchain_huggingface import ChatHuggingFace, HuggingFaceEndpoint
+from langchain_huggingface import HuggingFacePipeline
 
 from langchain_community.document_loaders import NotebookLoader
 
@@ -114,6 +116,22 @@ def request_api_key(selectedLLM,selectedModel,api_key):
                 timeout=None,
                 max_retries=3,
                 ) #initialising llm
+            llm.invoke("Hello")
+        except:
+            return("Could not initialise LLM")
+    elif selectedLLM=='Qwen':
+        os.environ["HUGGINGFACEHUB_API_TOKEN"] = api_key
+        try:
+            model = HuggingFacePipeline.from_model_id(
+                model_id=selectedModel,
+                task="text-generation",
+                device_map="auto",
+                model_kwargs={
+                    "low_cpu_mem_usage": True,
+                    "torch_dtype": "auto"
+                }
+            )
+            llm = ChatHuggingFace(llm=model, max_retries=3) #initialising llm
             llm.invoke("Hello")
         except:
             return("Could not initialise LLM")

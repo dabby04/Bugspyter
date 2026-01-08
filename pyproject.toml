@@ -23,7 +23,18 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
 ]
 dependencies = [
-    "jupyter_server>=2.4.0,<3"
+    "jupyter_server>=2.4.0,<3",
+    "pydantic",
+    "langchain",
+    "langchain-google-genai",
+    "langchain-groq",
+    "langchain-community",
+    "langchain_nvidia-ai-endpoints",
+    "langchain_anthropic",
+    "langchain-huggingface",
+    "langchain-openai",
+    "bandit"
+
 ]
 dynamic = ["version", "description", "authors", "urls", "keywords"]
 

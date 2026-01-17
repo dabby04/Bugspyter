@@ -300,7 +300,7 @@ function BugspyterComponent(props: BugspyterComponentProps) {
     )}
     </>
                 ) :
-                    (<div className="jp-Examplewidget"><h4>{message}</h4>
+                    (<div className="jp-Examplewidget">
                         <div><h3>Is the Notebook buggy?</h3></div>
                         <body>{buggy_or_not}</body>
                         <div><h3>What major bug type is in the notebook?</h3></div>

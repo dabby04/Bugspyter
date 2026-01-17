@@ -2,12 +2,11 @@ import json
 import sys
 import os
 
-# Allow running as a module (python -m bugspyter.script) and as a file (python bugspyter/script.py)
 try:
     # When run as a module, relative imports work
-    from .chat import llm_call_router, request_api_key, router_workflow
-    from .chat import load_notebook
-    from .chat import load_notebook_content
+    from bugspyter.chat import llm_call_router, request_api_key, router_workflow
+    from bugspyter.chat import load_notebook
+    from bugspyter.chat import load_notebook_content
 except ImportError:
     # When run directly, add project root to sys.path and use absolute imports
     PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))

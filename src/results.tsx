@@ -43,6 +43,8 @@ function BugspyterComponent(props: BugspyterComponentProps) {
     const [step, setStep] = useState(1); // Tracks the current step
     const [selectedLLM, setSelectedLLM] = useState(""); // Selected LLM
     const [selectedModel, setSelectedModel] = useState(""); // Selected model
+    const [needsApiKey, setNeedsApiKey] = useState(false);
+    const yieldToUI = () => Promise.resolve();
 
     const llmOptions: LLMOptions = {
         Anthropic: [
@@ -78,38 +80,74 @@ function BugspyterComponent(props: BugspyterComponentProps) {
         ],
     };
 
+    useEffect(() =>{
+        if(!selectedLLM||!selectedModel){
+            return;
+        }
+        initialiseAPIKey();
+    }, [selectedLLM,selectedModel])
+
     useEffect(() => {
-        if (step === 2 && selectedLLM && llmOptions[selectedLLM].length === 0) {
+        // if (step === 2 && selectedLLM && llmOptions[selectedLLM].length === 0) {
+        //     setStep(3);
+        // }
+        if(step!==2||!selectedLLM){
+            return;
+        }
+        if(needsApiKey){
             setStep(3);
         }
     }, [step, selectedLLM]);
 
-    const path = props.notebook_path;
+    async function ensureLLMInitialized(key?: string){
+        const body:any = {
+                selectedLLM,
+                selectedModel
+            };
 
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        setErrorMessage('');
-        setIsLoading(true);
-
-        try {
-            // 1) Initialize LLM with API key
-            const initReply = await requestAPI<any>('request_api', {
-                body: JSON.stringify({
-                    selectedLLM,
-                    selectedModel,
-                    key
-                }),
-                method: 'POST'
-            });
-
-            setMessage(initReply.result);
-
-            // Guard: stop if LLM not initialized
-            if (initReply.result !== 'LLM initialised') {
-                setErrorMessage(initReply.result || 'API key not initialised');
-                return; // Keep form visible; do not proceed
+            if (key){
+                body.key = key;
             }
 
+            // 1) Initialize LLM with API key
+            return await requestAPI<any>('request_api', {
+                body: JSON.stringify(body),
+                method: 'POST'
+            });
+    }
+
+    async function initialiseAPIKey(){
+        setIsLoading(true);
+        setErrorMessage('');
+
+        try{
+            const initReply = await ensureLLMInitialized();
+
+            if(initReply.result == 'LLM initialised'){
+                setNeedsApiKey(false);
+                setMessage(initReply.result);
+                await yieldToUI();
+                await process();
+                
+            }
+            else if (initReply.result == "Could not initialise LLM"){
+                setNeedsApiKey(true);
+            }
+            else{
+                setErrorMessage(initReply.result);
+            }
+        } catch(err){
+            setErrorMessage("Failed to contact server")
+        }
+        finally{
+            setIsLoading(false);
+        }
+    }
+
+    const path = props.notebook_path;
+
+    async function process(){
+        try{
             // 2) Load notebook only after successful init
             const nbReply = await requestAPI<any>('load_notebook', {
                 body: JSON.stringify({ notebook_path: path }),
@@ -119,9 +157,11 @@ function BugspyterComponent(props: BugspyterComponentProps) {
             const decision = nbReply.decision;
             if(decision == 'runtime'){
                 setDecisionStatus("Running runtime execution tool...")
+                await yieldToUI();
             }
             else if(decision =='analysis'){
                 setDecisionStatus("Analysing notebook")
+                await yieldToUI();
             }
 
             // 3) Run analysis
@@ -139,6 +179,31 @@ function BugspyterComponent(props: BugspyterComponentProps) {
 
             // Only now switch to results view
             setShowForm(false);
+        }
+        catch (error: any) {
+            console.error('Error submitting form:', error);
+            setErrorMessage(String(error?.message ?? error));
+            return;
+        }
+    }
+
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        setErrorMessage('');
+        setIsLoading(true);
+
+        try {
+            const initReply = await ensureLLMInitialized(key);
+            // Guard: stop if LLM not initialized
+            if (initReply.result !== 'LLM initialised') {
+                setErrorMessage(initReply.result || 'API key not initialised');
+                return; // Keep form visible; do not proceed
+            }
+            setMessage(initReply.result);
+            setNeedsApiKey(false);
+            setKey("");
+            await process();
+
         } catch (error: any) {
             console.error('Error submitting form:', error);
             setErrorMessage(String(error?.message ?? error));
@@ -151,6 +216,7 @@ function BugspyterComponent(props: BugspyterComponentProps) {
         <body id="main">
             <div className="jp-Examplewidget"><h2>Code Bugs and Vulnerability Assessment</h2>
                 {showForm ? (
+                    <>
                     <form onSubmit={handleSubmit}>
                         {/* Step 1: Select LLM */}
                         {step === 1 && (
@@ -200,7 +266,7 @@ function BugspyterComponent(props: BugspyterComponentProps) {
                         )}
 
                         {/* Step 3: Enter API Key */}
-                        {step === 3 && (
+                        {step === 3 && needsApiKey && (
                             <div>
                                 <label>
                                     Enter your API Key:
@@ -225,6 +291,14 @@ function BugspyterComponent(props: BugspyterComponentProps) {
                             </div>
                         )}
                     </form>
+                    {isLoading && (
+      <div className="jp-Status">
+        <h4>{message}</h4>
+        <p>{status}</p>
+        <p>{decision_status}</p>
+      </div>
+    )}
+    </>
                 ) :
                     (<div className="jp-Examplewidget"><h4>{message}</h4>
                         <div><h3>Is the Notebook buggy?</h3></div>

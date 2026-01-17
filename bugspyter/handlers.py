@@ -24,7 +24,7 @@ class ConfigHandler(APIHandler):
         input_data=self.get_json_body()
         selectedLLM=input_data["selectedLLM"]
         selectedModel= input_data["selectedModel"]
-        key=input_data["key"]
+        key=input_data.get("key")
         result=request_api_key(selectedLLM,selectedModel,key)
         self.finish(json.dumps({
             "data": "This is /bugspyter/get-example endpoint!",

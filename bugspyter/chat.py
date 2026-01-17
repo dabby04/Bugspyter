@@ -1,6 +1,3 @@
-# call request_api_key -> verify -> load_notebook_content -> load it into memory (build_memory with You are a reviewer for computational notebooks.
-    #     Answer all questions to the best of your ability concerning this notebook) -> load_notebook -> get_router ->
-    # if decision.step == runtime, runtime_execution, call decision again? then just call buggy_or_not...
 from typing import Literal, Optional, TypedDict
 import warnings
 import sys
@@ -9,6 +6,7 @@ warnings.filterwarnings("ignore")
 from pprint import pprint
 import json
 import os
+import keyring
 from pydantic import BaseModel, Field, model_validator
 
 from langchain_google_genai import ChatGoogleGenerativeAI
@@ -60,70 +58,96 @@ class State(TypedDict):
     output: str
     summary: Optional[str]
 
+LLM_ENV_KEYS = {
+    "Anthropic": "ANTHROPIC_API_KEY",
+    "Cohere": "COHERE_API_KEY",
+    "Groq": "GROQ_API_KEY",
+    "Nvidia": "NVIDIA_API_KEY",
+    "Qwen": "HUGGINGFACEHUB_API_TOKEN",
+    "Gemini": "GOOGLE_API_KEY"
+}
+
+def get_api_key_for_llm(selectedLLM, api_key=None):
+    """
+    Retrieves the API key from keyring, or prompts user if not available.
+    """
+    service_name = LLM_ENV_KEYS.get(selectedLLM)
+
+    if api_key:
+        # store in keyring for future sessions
+        keyring.set_password("bugspyter", service_name, api_key)
+        return api_key
+
+    # Try keyring first
+    stored_key = keyring.get_password("bugspyter", service_name)
+    if stored_key:
+        return stored_key
+
+    # fallback
+    return "LLM not initialised"
+
+def clear_all_api_keys():
+    results = {}
+    for key_name in LLM_ENV_KEYS.values():
+        try:
+            keyring.delete_password("bugspyter", key_name)
+            results[key_name] = "cleared"
+        except Exception:
+            results[key_name] = "not found"
+    return results
+
 def request_api_key(selectedLLM,selectedModel,api_key):
     """
     Makes sure users API key is received and LLM is initialised
     """
-    if not api_key:
-        return "API key not initialised"
-    
+    api_key = get_api_key_for_llm(selectedLLM, api_key)
     global llm
-    if selectedLLM=='Anthropic':
-        os.environ["ANTHROPIC_API_KEY"] = api_key
-        try:
+    
+    try:
+        if selectedLLM=='Anthropic':
             llm = ChatAnthropic(
                 model=selectedModel,
+                api_key = api_key,
                 temperature=0,
                 max_tokens=None,
                 timeout=None,
                 max_retries=3,
                 ) #initialising llm
             llm.invoke("Hello")
-        except:
-            return("Could not initialise LLM")
-    elif selectedLLM=='Cohere':
-        os.environ["COHERE_API_KEY"] = api_key
-        try:
+        
+        elif selectedLLM=='Cohere':
             llm = ChatCohere(
                 temperature=0,
+                api_key = api_key,
                 max_tokens=None,
                 timeout=None,
                 max_retries=3,
                 ) #initialising llm
             llm.invoke("Hello")
-        except:
-            return("Could not initialise LLM")
-    elif selectedLLM=='Groq':
-        os.environ["GROQ_API_KEY"] = api_key
-        try:
+        elif selectedLLM=='Groq':
             llm = ChatGroq(
                 model=selectedModel,
+                api_key = api_key,
                 temperature=0,
                 max_tokens=None,
                 timeout=None,
                 max_retries=3,
                 ) #initialising llm
             llm.invoke("Hello")
-        except:
-            return("Could not initialise LLM")
-    elif selectedLLM=='Nvidia':
-        os.environ["NVIDIA_API_KEY"] = api_key
-        try:
+        elif selectedLLM=='Nvidia':
             llm = ChatNVIDIA(
                 model=selectedModel,
+                api_key = api_key,
                 temperature=0,
                 max_tokens=None,
                 timeout=None,
                 max_retries=3,
                 ) #initialising llm
             llm.invoke("Hello")
-        except:
-            return("Could not initialise LLM")
-    elif selectedLLM=='Qwen':
-        os.environ["HUGGINGFACEHUB_API_TOKEN"] = api_key
-        try:
+        elif selectedLLM=='Qwen':
             model = HuggingFacePipeline.from_model_id(
                 model_id=selectedModel,
+                api_key = api_key,
                 task="text-generation",
                 device_map="auto",
                 model_kwargs={
@@ -133,20 +157,17 @@ def request_api_key(selectedLLM,selectedModel,api_key):
             )
             llm = ChatHuggingFace(llm=model, max_retries=3) #initialising llm
             llm.invoke("Hello")
-        except:
-            return("Could not initialise LLM")
-    else:
-        os.environ["GOOGLE_API_KEY"] = api_key
-        try:
+        else:
             llm = ChatGoogleGenerativeAI(
                 model=selectedModel,
+                api_key = api_key,
                 temperature=0,
                 max_tokens=None,
                 timeout=None,
                 max_retries=3,
                 ) #initialising llm
             llm.invoke("Hello")
-        except:
+    except:
             return("Could not initialise LLM")
     
     return "LLM initialised"
@@ -173,32 +194,6 @@ def load_notebook_content(notebook_path):
     result = json.dumps({"docs":docs_as_dict,"bandit_report":bandit_report})
     return result
 
-# def load_notebook(argument):
-#     """
-#     Load the notebook content into the LLM and run all request calls
-#     """
-#     path=f"{argument}"
-#     loader = NotebookLoader(
-#     path,
-#     include_outputs=True,
-#     max_output_length=20
-# )
-#     docs=loader.load_and_split()
-#     content = docs
-    
-#     bandit_report= run_bandit(argument)
-    
-    # def buggy_or_not(state: MessagesState):
-    #     """
-    #     Sets up conversational memory with LLM
-    #     """
-        
-    #     system_message= """You are a reviewer for computational notebooks.
-    #     Answer all questions to the best of your ability concerning this notebook"""
-    #     messages = [SystemMessage(content=system_message)] + state["messages"]
-    #     response = llm.invoke(messages)
-
-    #     return {"messages": response}
 def build_memory(system_message:str):
     """Building Langgraph conversational memory"""
     def llm_node(state: MessagesState):
@@ -241,29 +236,27 @@ def buggy_or_not(runtime_json: Optional[str]=None):
                                 HumanMessage(content="Is the notebook I provided earlier buggy? Please answer my question only with Yes or No. Please make sure that the answer provided is only in one word")
                                 ]},config)["messages"][-1].content
         
+#     res=app.invoke({"messages":[HumanMessage(content="""If you said the notebook was buggy, out of these bugs, what is the major bug in this computational notebook?
+# List of bugs: Kernel, Conversion, Portability, Environments and Settings, Connection, Processing, Cell Defect, and Implementation
+# Please respond only with one bug out of the list if the notebook is buggy""")]},config,)["messages"][-1].content
+#     major_bug=res
     res=app.invoke({"messages":[HumanMessage(content="""If you said the notebook was buggy, out of these bugs, what is the major bug in this computational notebook?
-List of bugs: Kernel, Conversion, Portability, Environments and Settings, Connection, Processing, Cell Defect, and Implementation
+List of bugs: Attribute Error, Data Value Violation, Feature name mismatch, Index error, Invalid argument, IO Error, Key Error, Model Initialization Error, Module not found, Runtime error, Tensor shape mismatch, Type error, Unsupported Broadcast, Value Error, and Variable Not Found
 Please respond only with one bug out of the list if the notebook is buggy""")]},config,)["messages"][-1].content
     major_bug=res
 
+#     res=app.invoke({"messages":[HumanMessage(content="""You specifically identify the root causes for bugs in computational notebooks.
+# The root causes you choose are from this list: Install and Configuration problems, Version problems, Deprecation, Permission denied
+# , Time Out, Memory error, Coding error, Logic error, Hardware software limitations, and  Unknown
+# If you said the notebook was buggy, please respond only with a root cause from this list and the reason why in a sentence.""")]},config,)["messages"][-1].content
+#     root_cause=res
     res=app.invoke({"messages":[HumanMessage(content="""You specifically identify the root causes for bugs in computational notebooks.
-The root causes you choose are from this list: Install and Configuration problems, Version problems, Deprecation, Permission denied
-, Time Out, Memory error, Coding error, Logic error, Hardware software limitations, and  Unknown
+The root causes you choose are from this list: API misuse, data confusion, NB specific, implementation error, ML model confusion, and library cause
 If you said the notebook was buggy, please respond only with a root cause from this list and the reason why in a sentence.""")]},config,)["messages"][-1].content
     root_cause=res
     
     result=json.dumps({"buggy_or_not": buggy,"major_bug":major_bug,"root_cause":root_cause})
     return(result)
-
-# def generate_summary(notebook_path:str):
-#     """ Generate a summary of the notebook"""
-#     notebook= load_notebook(notebook_path)
-#     for contentChunks in notebook:
-#         llm.invoke({"messages":[HumanMessage(content=contentChunks.page_content)]
-#                     },config,)
-#     res=llm.invoke({"messages":[HumanMessage(content="Based on the notebook provided earlier, generate a summary for the notebook")]
-#                 },config,)["messages"][-1].content
-#     return res
 
 def summarize_conversation(state: State):
     """Generate a summary of the conversation"""
@@ -332,8 +325,34 @@ def router_workflow(decision:str, notebook_path:str):
     
     buggy_questions= buggy_or_not(runtime_json)
     tools = analysis()
-    
-    result= json.dumps({"buggy_questions": buggy_questions,"analysis":tools})
+
+    # Normalize analysis content to a plain string for robust UI rendering
+    def _normalize_to_string(value: object) -> str:
+        try:
+            if value is None:
+                return ""
+            if isinstance(value, str):
+                return value
+            if isinstance(value, list):
+                return "".join(_normalize_to_string(v) for v in value)
+            if isinstance(value, dict):
+                # Prefer typical text-bearing keys
+                if "text" in value:
+                    return str(value.get("text", ""))
+                if "content" in value:
+                    return str(value.get("content", ""))
+                # Fallback: stringify but avoid dumping very large nested blobs
+                # Strip known noisy keys like 'extras' if present
+                safe_obj = {k: v for k, v in value.items() if k not in ("extras", "signature")}
+                return json.dumps(safe_obj)
+            return str(value)
+        except Exception:
+            # Last-resort fallback
+            return str(value)
+
+    analysis_text = _normalize_to_string(tools)
+
+    result= json.dumps({"buggy_questions": buggy_questions, "analysis": analysis_text})
     return result
     
 def analysis():

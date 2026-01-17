@@ -48,20 +48,7 @@ the frontend extension, check the frontend extension is installed:
 ```bash
 jupyter labextension list
 ```
-## Frontend extension is not working
 
-If you see the frontend extension, but it is not working, check that the server extension is enabled:
-
-```
-jupyter serverextension list
-```
-## Server extension is installed and enables, but bugspyter does not appear
-
-If the server extension is installed and enabled, but you are not seeing the frontend, check the frontend is installed:
-
-```
-jupyter labextension list
-```
 If it is installed, try:
 
 ```
@@ -83,7 +70,7 @@ The `jlpm` command is JupyterLab's pinned version of
 # Clone the repo to your local environment
 # Change directory to the bugspyter directory
 # Install package in development mode
-pip install -e ".[test]"
+pip install -e .
 # Link your development version of the extension with JupyterLab
 jupyter labextension develop . --overwrite
 # Server extension must be manually installed in develop mode
@@ -120,44 +107,6 @@ pip uninstall bugspyter
 In development mode, you will also need to remove the symlink created by `jupyter labextension develop`
 command. To find its location, you can run `jupyter labextension list` to figure out where the `labextensions`
 folder is located. Then you can remove the symlink named `bugspyter` within that folder.
-
-### Testing the extension
-
-#### Server tests
-
-This extension is using [Pytest](https://docs.pytest.org/) for Python code testing.
-
-Install test dependencies (needed only once):
-
-```sh
-pip install -e ".[test]"
-# Each time you install the Python package, you need to restore the front-end extension link
-jupyter labextension develop . --overwrite
-```
-
-To execute them, run:
-
-```sh
-pytest -vv -r ap --cov bugspyter
-```
-
-#### Frontend tests
-
-This extension is using [Jest](https://jestjs.io/) for JavaScript code testing.
-
-To execute them, execute:
-
-```sh
-jlpm
-jlpm test
-```
-
-#### Integration tests
-
-This extension uses [Playwright](https://playwright.dev/docs/intro) for the integration tests (aka user level tests).
-More precisely, the JupyterLab helper [Galata](https://github.com/jupyterlab/jupyterlab/tree/master/galata) is used to handle testing the extension in JupyterLab.
-
-More information are provided within the [ui-tests](./ui-tests/README.md) README.
 
 ### Packaging the extension
 

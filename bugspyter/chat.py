@@ -328,27 +328,27 @@ def router_workflow(decision:str, notebook_path:str):
 
     # Normalize analysis content to a plain string for robust UI rendering
     def _normalize_to_string(value: object) -> str:
-        try:
-            if value is None:
-                return ""
-            if isinstance(value, str):
-                return value
-            if isinstance(value, list):
-                return "".join(_normalize_to_string(v) for v in value)
-            if isinstance(value, dict):
-                # Prefer typical text-bearing keys
-                if "text" in value:
-                    return str(value.get("text", ""))
-                if "content" in value:
-                    return str(value.get("content", ""))
-                # Fallback: stringify but avoid dumping very large nested blobs
-                # Strip known noisy keys like 'extras' if present
-                safe_obj = {k: v for k, v in value.items() if k not in ("extras", "signature")}
-                return json.dumps(safe_obj)
-            return str(value)
-        except Exception:
-            # Last-resort fallback
-            return str(value)
+        if value is None:
+            return ""
+
+        if isinstance(value, str):
+            return value.strip()
+
+        if isinstance(value, list):
+            return "\n\n".join(_normalize_to_string(v) for v in value if v is not None)
+
+        if isinstance(value, dict):
+            for key in ("analysis", "content", "text", "message"):
+                if key in value:
+                    return _normalize_to_string(value[key])
+
+            return "\n".join(
+                f"**{k}**:\n{_normalize_to_string(v)}"
+                for k, v in value.items()
+                if k not in ("extras", "signature")
+            )
+
+        return str(value)
 
     analysis_text = _normalize_to_string(tools)
 

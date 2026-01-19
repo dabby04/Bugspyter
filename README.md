@@ -4,7 +4,7 @@
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/github_username/bugspyter/main?urlpath=lab)
 
 
-A JupyterLab extension that uses AI agents to detect buggy and vulnerable code.
+A JupyterLab extension that uses an agent-based model to detect buggy and vulnerable code.
 
 This extension is composed of a Python package named `bugspyter`
 for the server extension and a NPM package named `bugspyter`
@@ -16,6 +16,9 @@ for the frontend extension.
 ## Requirements
 
 - JupyterLab >= 4.0.0
+
+# Getting Started
+To start using Bugspyter, follow these installation and execution steps:
 
 ## Install
 
@@ -56,58 +59,23 @@ jupyter lab clean
 jupyter lab build
 ```
 
-## Contributing
+# Running Evaluations
+We provide helper scripts to help automate the process of running evaluations.
 
-### Development install
+To run evaluations on Santana et al.'s dataset:
 
-Note: You will need NodeJS to build the extension package.
-
-The `jlpm` command is JupyterLab's pinned version of
-[yarn](https://yarnpkg.com/) that is installed with JupyterLab. You may use
-`yarn` or `npm` in lieu of `jlpm` below.
-
-```bash
-# Clone the repo to your local environment
-# Change directory to the bugspyter directory
-# Install package in development mode
-pip install -e .
-# Link your development version of the extension with JupyterLab
-jupyter labextension develop . --overwrite
-# Server extension must be manually installed in develop mode
-jupyter server extension enable bugspyter
-# Rebuild extension Typescript source after making changes
-jlpm build
+1. First extract the notebooks by running:
+```
+bash experiments/extract_notebooks_Santana.sh experiments/implementation_notebooks_Santana.csv
 ```
 
-You can watch the source directory and run JupyterLab at the same time in different terminals to watch for changes in the extension's source and automatically rebuild the extension.
+2. Run `python ./automate/run_all_Santana.py`
 
-```bash
-# Watch the source directory in one terminal, automatically rebuilding when needed
-jlpm watch
-# Run JupyterLab in another terminal
-jupyter lab
+To run evaluations on JunoBench's benchmark dataset:
+1. First clone the repository on HuggingFace:
+```
+git clone https://huggingface.co/datasets/PELAB-LiU/JunoBench
 ```
 
-With the watch command running, every saved change will immediately be built locally and available in your running JupyterLab. Refresh JupyterLab to load the change in your browser (you may need to wait several seconds for the extension to be rebuilt).
+2. Follow the `docker run` command on their HuggingFace Repository.
 
-By default, the `jlpm build` command generates the source maps for this extension to make it easier to debug using the browser dev tools. To also generate source maps for the JupyterLab core extensions, you can run the following command:
-
-```bash
-jupyter lab build --minimize=False
-```
-
-### Development uninstall
-
-```bash
-# Server extension must be manually disabled in develop mode
-jupyter server extension disable bugspyter
-pip uninstall bugspyter
-```
-
-In development mode, you will also need to remove the symlink created by `jupyter labextension develop`
-command. To find its location, you can run `jupyter labextension list` to figure out where the `labextensions`
-folder is located. Then you can remove the symlink named `bugspyter` within that folder.
-
-### Packaging the extension
-
-See [RELEASE](RELEASE.md)

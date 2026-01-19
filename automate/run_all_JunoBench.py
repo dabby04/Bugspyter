@@ -1,11 +1,15 @@
 import os
 import subprocess
 
-# Path to your Benchmark folder inside Docker
-BENCHMARK_DIR = "/junobench_env"
+CHOSEN_MODEL = "gemini-2.5-flash"
+
+# Path to Benchmark folder
+BENCHMARK_DIR = "/benchmarks/junobench_env"
 
 # Path to experiments folder inside Docker (must match your Docker mount)
-EXPERIMENTS_DIR = "/opt/my_extension/experiments/CHOSEN_MODEL"
+EXPERIMENTS_DIR = os.path.join("/opt/my_extension","experiments",CHOSEN_MODEL)
+
+os.makedirs(EXPERIMENTS_DIR, exist_ok=True)
 
 for subfolder in os.listdir(BENCHMARK_DIR):
     subfolder_path = os.path.join(BENCHMARK_DIR, subfolder)

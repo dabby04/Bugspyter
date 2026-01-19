@@ -14,7 +14,7 @@ if [ $# -ne 1 ]; then
     usage
 fi
 
-CSV_FILE=$1
+CSV_FILE="$(realpath "$1")"
 
 # Check if the file exists
 if [ ! -f "$CSV_FILE" ]; then
@@ -23,8 +23,8 @@ if [ ! -f "$CSV_FILE" ]; then
 fi
 
 # Create directories for the file if needed
-mkdir -p "notebooks"
-cd "notebooks"
+mkdir -p "experiments/notebooks"
+cd "experiments/notebooks"
 
 # Read the CSV file line by line (skipping the header row)
 { read -r; while IFS="," read -r ID REPO_URL COMMIT_URL FILE_PATH HASH BUGTYPE1 BUGTYPE2 ROOTCAUSE IMPACTS ADDED DELETED FILE_ADDED FILE_DELETED MSG; do

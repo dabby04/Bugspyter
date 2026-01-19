@@ -1,5 +1,5 @@
 {
-    "name": "jupyterbugbot",
+    "name": "bugspyter",
     "version": "0.1.0",
     "description": "A JupyterLab extension that uses AI agents to detect buggy and vulnerable code.",
     "keywords": [
@@ -7,9 +7,9 @@
         "jupyterlab",
         "jupyterlab-extension"
     ],
-    "homepage": "https://github.com/github_username/jupyterbugbot",
+    "homepage": "https://github.com/github_username/bugspyter",
     "bugs": {
-        "url": "https://github.com/github_username/jupyterbugbot/issues"
+        "url": "https://github.com/github_username/bugspyter/issues"
     },
     "license": "BSD-3-Clause",
     "author": {
@@ -26,7 +26,7 @@
     "style": "style/index.css",
     "repository": {
         "type": "git",
-        "url": "https://github.com/github_username/jupyterbugbot.git"
+        "url": "https://github.com/github_username/bugspyter.git"
     },
     "scripts": {
         "build": "jlpm build:lib && jlpm build:labextension:dev",
@@ -38,7 +38,7 @@
         "clean": "jlpm clean:lib",
         "clean:lib": "rimraf lib tsconfig.tsbuildinfo",
         "clean:lintcache": "rimraf .eslintcache .stylelintcache",
-        "clean:labextension": "rimraf jupyterbugbot/labextension jupyterbugbot/_version.py",
+        "clean:labextension": "rimraf bugspyter/labextension bugspyter/_version.py",
         "clean:all": "jlpm clean:lib && jlpm clean:labextension && jlpm clean:lintcache",
         "eslint": "jlpm eslint:check --fix",
         "eslint:check": "eslint . --cache --ext .ts,.tsx",
@@ -104,12 +104,12 @@
                     "pip"
                 ],
                 "base": {
-                    "name": "jupyterbugbot"
+                    "name": "bugspyter"
                 }
             }
         },
         "extension": true,
-        "outputDir": "jupyterbugbot/labextension"
+        "outputDir": "bugspyter/labextension"
     },
     "eslintIgnore": [
         "node_modules",

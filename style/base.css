@@ -6,3 +6,38 @@
 #Results-tab{
     overflow: auto !important;
 }
+
+/* Prevent horizontal scrolling for text content in the side panel */
+.jp-Examplewidget {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+/* Wrap long text lines (headings, paragraphs, list items) */
+.jp-Examplewidget h1,
+.jp-Examplewidget h2,
+.jp-Examplewidget h3,
+.jp-Examplewidget h4,
+.jp-Examplewidget h5,
+.jp-Examplewidget h6,
+.jp-Examplewidget p,
+.jp-Examplewidget li {
+    white-space: normal;
+    overflow-wrap: anywhere; /* modern, works better than word-wrap */
+    word-break: break-word;  /* fallback */
+}
+
+/* Keep code blocks readable; allow horizontal scroll inside the block */
+.jp-Examplewidget pre {
+    max-width: 100%;
+    overflow-x: auto;
+    background-color: #f3f4f6; /* light grey */
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 12px;
+}
+
+/* Avoid forcing global wrapping inside inline code */
+.jp-Examplewidget code {
+    white-space: pre; /* don't wrap inline code */
+}

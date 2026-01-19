@@ -10,7 +10,7 @@ import { INotebookTracker } from '@jupyterlab/notebook';
 import { ITranslator } from '@jupyterlab/translation';
 import { CommandToolbarButton, codeCheckIcon,bugDotIcon } from '@jupyterlab/ui-components';
 import { Panel } from '@lumino/widgets';
-import { BugBotWidget } from './results';
+import { BugspyterWidget } from './results';
 
 function activate(
   app: JupyterFrontEnd,
@@ -28,7 +28,7 @@ function activate(
   const command: string = 'apod:insert1';
 
   commands.addCommand(command, {
-    label: 'BugBot',
+    label: 'Bugspyter',
     icon: codeCheckIcon,
     execute: async () => {
       addSideBar(app,notebookTracker)
@@ -46,7 +46,7 @@ function activate(
     // Add a command if it isn't already added
     if (!commands.hasCommand('apod:insert1')) {
       commands.addCommand('apod:insert1', {
-        label: 'BugBot',
+        label: 'Bugspyter',
         icon: bugDotIcon, // Set an icon if you want
         execute: async () => {
           // Add functionality for the command, like inserting an image or executing something.
@@ -89,7 +89,7 @@ function addSideBar(app: any,notebookTracker:INotebookTracker) {
   const panel = new Panel();
   panel.id = panelId;
   panel.title.icon = codeCheckIcon;
-  panel.addWidget(new BugBotWidget(validPath));
+  panel.addWidget(new BugspyterWidget(validPath));
   app.shell.add(panel, 'left', { rank: 2000 })
   app.shell.activateById('Results-tab')
 }
@@ -97,10 +97,10 @@ function addSideBar(app: any,notebookTracker:INotebookTracker) {
 
 
 /**
- * Initialization data for the jupyterbugbot extension.
+ * Initialization data for the bugspyter extension.
  */
 const plugin: JupyterFrontEndPlugin<void> = {
-  id: 'jupyterbugbot:plugin',
+  id: 'bugspyter:plugin',
   description: 'A JupyterLab extension that uses AI agents to detect buggy and vulnerable code.',
   autoStart: true,
   requires: [ICommandPalette, INotebookTracker],

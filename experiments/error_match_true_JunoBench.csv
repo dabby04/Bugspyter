@@ -1,0 +1,526 @@
+nb_name,eid,ename,evalue,traceback,notebook_path,timestamp,error_type,error_message,clean_error_name,clean_error_message,error_match
+NBspecific_18,9b2d05a0-2b2f-3d1a-b79a-553c1ab75c48,nameerror,name 'y_pred' is not defined,"['---------------------------------------------------------------------------', 'NameError                                 Traceback (most recent call last)', 'Cell In[28], line 2\n      1 from sklearn.metrics import mean_absolute_error\n----> 2 mae = mean_absolute_error(y_test, y_pred)\n      3 mae\n', ""NameError: name 'y_pred' is not defined""]",/junobench_env/NBspecific_18/NBspecific_18_extension.ipynb,2026-01-14T17:48:43.714436,CellExecutionError,"An error occurred while executing the following cell:
+------------------
+from sklearn.metrics import mean_absolute_error
+mae = mean_absolute_error(y_test, y_pred)
+mae
+------------------
+
+[0;31m---------------------------------------------------------------------------[0m
+[0;31mNameError[0m                                 Traceback (most recent call last)
+[0;32m<ipython-input-27-f778b0ff9eb9>[0m in [0;36m<cell line: 2>[0;34m()[0m
+[1;32m      1[0m [0;32mfrom[0m [0msklearn[0m[0;34m.[0m[0mmetrics[0m [0;32mimport[0m [0mmean_absolute_error[0m[0;34m[0m[0;34m[0m[0m
+[0;32m----> 2[0;31m [0mmae[0m [0;34m=[0m [0mmean_absolute_error[0m[0;34m([0m[0my_test[0m[0;34m,[0m [0my_pred[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m      3[0m [0mmae[0m[0;34m[0m[0;34m[0m[0m
+
+[0;31mNameError[0m: name 'y_pred' is not defined
+NameError: name 'y_pred' is not defined
+",NameError,name 'y_pred' is not defined,True
+tensorflow_1,fa2561a4-72fc-32ca-98d9-6dca427df50a,invalidargumenterror,Graph execution error:,"['---------------------------------------------------------------------------', 'InvalidArgumentError                      Traceback (most recent call last)', 'Cell In[65], line 1\n----> 1 history = model.fit(train_ds,validation_data=val_ds, epochs=1)\n', 'File /opt/conda/lib/python3.10/site-packages/keras/src/utils/traceback_utils.py:70, in filter_traceback.<locals>.error_handler(*args, **kwargs)\n     67     filtered_tb = _process_traceback_frames(e.__traceback__)\n     68     # To get the full stack trace, call:\n     69     # `tf.debugging.disable_traceback_filtering()`\n---> 70     raise e.with_traceback(filtered_tb) from None\n     71 finally:\n     72     del filtered_tb\n', 'File /opt/conda/lib/python3.10/site-packages/tensorflow/python/eager/execute.py:53, in quick_execute(op_name, num_outputs, inputs, attrs, ctx, name)\n     51 try:\n     52   ctx.ensure_initialized()\n---> 53   tensors = pywrap_tfe.TFE_Py_Execute(ctx._handle, device_name, op_name,\n     54                                       inputs, attrs, num_outputs)\n     55 except core._NotOkStatusException as e:\n     56   if name is not None:\n', 'InvalidArgumentError: Graph execution error:\n\n2 root error(s) found.\n  (0) INVALID_ARGUMENT:  Unknown image file format. One of JPEG, PNG, GIF, BMP required.\n\t [[{{node decode_image/DecodeImage}}]]\n\t [[IteratorGetNext]]\n\t [[IteratorGetNext/_4]]\n  (1) INVALID_ARGUMENT:  Unknown image file format. One of JPEG, PNG, GIF, BMP required.\n\t [[{{node decode_image/DecodeImage}}]]\n\t [[IteratorGetNext]]\n0 successful operations.\n0 derived errors ignored. [Op:__inference_train_function_18868]']",/junobench_env/tensorflow_1/tensorflow_1_extension.ipynb,2026-01-14T18:30:46.606692,CellExecutionError,"An error occurred while executing the following cell:
+------------------
+# history = model.fit(train_ds,validation_data=val_ds, epochs=1)
+history = model.fit(train_ds,validation_data=val_ds, epochs=epochs)
+------------------
+
+[0;31m---------------------------------------------------------------------------[0m
+[0;31mInvalidArgumentError[0m                      Traceback (most recent call last)
+[0;32m<ipython-input-19-d5b13aba279e>[0m in [0;36m<cell line: 2>[0;34m()[0m
+[1;32m      1[0m [0;31m# history = model.fit(train_ds,validation_data=val_ds, epochs=1)[0m[0;34m[0m[0;34m[0m[0m
+[0;32m----> 2[0;31m [0mhistory[0m [0;34m=[0m [0mmodel[0m[0;34m.[0m[0mfit[0m[0;34m([0m[0mtrain_ds[0m[0;34m,[0m[0mvalidation_data[0m[0;34m=[0m[0mval_ds[0m[0;34m,[0m [0mepochs[0m[0;34m=[0m[0mepochs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m
+[0;32m/usr/local/lib/python3.10/dist-packages/keras/src/utils/traceback_utils.py[0m in [0;36merror_handler[0;34m(*args, **kwargs)[0m
+[1;32m    120[0m             [0;31m# To get the full stack trace, call:[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    121[0m             [0;31m# `keras.config.disable_traceback_filtering()`[0m[0;34m[0m[0;34m[0m[0m
+[0;32m--> 122[0;31m             [0;32mraise[0m [0me[0m[0;34m.[0m[0mwith_traceback[0m[0;34m([0m[0mfiltered_tb[0m[0;34m)[0m [0;32mfrom[0m [0;32mNone[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m    123[0m         [0;32mfinally[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    124[0m             [0;32mdel[0m [0mfiltered_tb[0m[0;34m[0m[0;34m[0m[0m
+
+[0;32m/usr/local/lib/python3.10/dist-packages/tensorflow/python/eager/execute.py[0m in [0;36mquick_execute[0;34m(op_name, num_outputs, inputs, attrs, ctx, name)[0m
+[1;32m     51[0m   [0;32mtry[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[1;32m     52[0m     [0mctx[0m[0;34m.[0m[0mensure_initialized[0m[0;34m([0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0;32m---> 53[0;31m     tensors = pywrap_tfe.TFE_Py_Execute(ctx._handle, device_name, op_name,
+[0m[1;32m     54[0m                                         inputs, attrs, num_outputs)
+[1;32m     55[0m   [0;32mexcept[0m [0mcore[0m[0;34m.[0m[0m_NotOkStatusException[0m [0;32mas[0m [0me[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+
+[0;31mInvalidArgumentError[0m: Graph execution error:
+
+Detected at node decode_image/DecodeImage defined at (most recent call last):
+<stack traces unavailable>
+Unknown image file format. One of JPEG, PNG, GIF, BMP required.
+	 [[{{node decode_image/DecodeImage}}]]
+	 [[IteratorGetNext]] [Op:__inference_one_step_on_iterator_4690]
+InvalidArgumentError: Graph execution error:
+
+Detected at node decode_image/DecodeImage defined at (most recent call last):
+<stack traces unavailable>
+Unknown image file format. One of JPEG, PNG, GIF, BMP required.
+	 [[{{node decode_image/DecodeImage}}]]
+	 [[IteratorGetNext]] [Op:__inference_one_step_on_iterator_4690]
+",InvalidArgumentError,Graph execution error:,True
+tensorflow_3,2463d2b7-55e5-382a-8eab-7a7b934a9bbc,attributeerror,'Sequential' object has no attribute 'load',"['---------------------------------------------------------------------------', 'AttributeError                            Traceback (most recent call last)', 'Cell In[14], line 1\n----> 1 model.load (""train.h5"")\n', ""AttributeError: 'Sequential' object has no attribute 'load'""]",/junobench_env/tensorflow_3/tensorflow_3_extension.ipynb,2026-01-14T17:43:46.792232,CellExecutionError,"An error occurred while executing the following cell:
+------------------
+model.load (""train.h5"")
+------------------
+
+[0;31m---------------------------------------------------------------------------[0m
+[0;31mAttributeError[0m                            Traceback (most recent call last)
+[0;32m<ipython-input-11-fc1db2e4ced8>[0m in [0;36m<cell line: 1>[0;34m()[0m
+[0;32m----> 1[0;31m [0mmodel[0m[0;34m.[0m[0mload[0m [0;34m([0m[0;34m""train.h5""[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m
+[0;31mAttributeError[0m: 'Sequential' object has no attribute 'load'
+AttributeError: 'Sequential' object has no attribute 'load'
+",AttributeError,'Sequential' object has no attribute 'load',True
+numpy_3,aec42bcb-64cd-3155-ba7d-2ff17300b0f4,valueerror,"autodetected range of [nan, nan] is not finite","['---------------------------------------------------------------------------', 'ValueError                                Traceback (most recent call last)', ""<ipython-input-14-ca0567e5d7f3> in <module>()\n     16 for col in cols:\n     17 \n---> 18     freq, edges = np.histogram(df[col].values)\n     19     dd[col] = hv.Histogram((edges, freq), label='ALL Loans').redim.label(x=' ')\n     20 \n"", '/opt/conda/lib/python3.6/site-packages/numpy/lib/histograms.py in histogram(a, bins, range, normed, weights, density)\n    778     a, weights = _ravel_and_check_weights(a, weights)\n    779 \n--> 780     bin_edges, uniform_bins = _get_bin_edges(a, bins, range, weights)\n    781 \n    782     # Histogram is an integer or a float array depending on the weights.\n', ""/opt/conda/lib/python3.6/site-packages/numpy/lib/histograms.py in _get_bin_edges(a, bins, range, weights)\n    415             raise ValueError('`bins` must be positive, when an integer')\n    416 \n--> 417         first_edge, last_edge = _get_outer_edges(a, range)\n    418 \n    419     elif np.ndim(bins) == 1:\n"", '/opt/conda/lib/python3.6/site-packages/numpy/lib/histograms.py in _get_outer_edges(a, range)\n    313         if not (np.isfinite(first_edge) and np.isfinite(last_edge)):\n    314             raise ValueError(\n--> 315                 ""autodetected range of [{}, {}] is not finite"".format(first_edge, last_edge))\n    316 \n    317     # expand empty range to avoid divide by zero\n', 'ValueError: autodetected range of [nan, nan] is not finite']",/junobench_env/numpy_3/numpy_3_extension.ipynb,2026-01-14T18:13:24.315954,CellExecutionError,"An error occurred while executing the following cell:
+------------------
+# %%opts Histogram[width=700 height=400 tools=['hover'] xrotation=0]{+axiswise +framewise}
+
+g = df.groupby('STATUS')
+
+cols = ['LOAN',
+        'MORTDUE', 
+        'VALUE',
+        'YOJ',
+        'DEROG',
+        'DELINQ',
+        'CLAGE',
+        'NINQ',
+        'CLNO']
+dd={}
+
+# Histograms
+for col in cols:
+    
+    freq, edges = np.histogram(df[col].values)
+    dd[col] = hv.Histogram((edges, freq), label='ALL Loans').redim.label(x=' ')
+    
+    freq, edges = np.histogram(g.get_group('PAID')[col].values, bins=edges)
+    dd[col] *= hv.Histogram((edges, freq), label='PAID Loans').redim.label(x=' ')
+    
+    freq, edges = np.histogram(g.get_group('DEFAULT')[col].values, bins=edges)
+    dd[col] *= hv.Histogram((edges, freq), label='DEFAULT Loans' ).redim.label(x=' ')   
+    
+var = [*dd]
+kdims=hv.Dimension(('var', 'Variable'), values=var)    
+hv.HoloMap(dd, kdims=kdims)
+------------------
+
+[0;31m---------------------------------------------------------------------------[0m
+[0;31mValueError[0m                                Traceback (most recent call last)
+[0;32m<ipython-input-9-f80eddf9cd65>[0m in [0;36m<cell line: 17>[0;34m()[0m
+[1;32m     17[0m [0;32mfor[0m [0mcol[0m [0;32min[0m [0mcols[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[1;32m     18[0m [0;34m[0m[0m
+[0;32m---> 19[0;31m     [0mfreq[0m[0;34m,[0m [0medges[0m [0;34m=[0m [0mnp[0m[0;34m.[0m[0mhistogram[0m[0;34m([0m[0mdf[0m[0;34m[[0m[0mcol[0m[0;34m][0m[0;34m.[0m[0mvalues[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m     20[0m     [0mdd[0m[0;34m[[0m[0mcol[0m[0;34m][0m [0;34m=[0m [0mhv[0m[0;34m.[0m[0mHistogram[0m[0;34m([0m[0;34m([0m[0medges[0m[0;34m,[0m [0mfreq[0m[0;34m)[0m[0;34m,[0m [0mlabel[0m[0;34m=[0m[0;34m'ALL Loans'[0m[0;34m)[0m[0;34m.[0m[0mredim[0m[0;34m.[0m[0mlabel[0m[0;34m([0m[0mx[0m[0;34m=[0m[0;34m' '[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[1;32m     21[0m [0;34m[0m[0m
+
+[0;32m/usr/local/lib/python3.10/dist-packages/numpy/core/overrides.py[0m in [0;36mhistogram[0;34m(*args, **kwargs)[0m
+
+[0;32m/usr/local/lib/python3.10/dist-packages/numpy/lib/histograms.py[0m in [0;36mhistogram[0;34m(a, bins, range, normed, weights, density)[0m
+[1;32m    791[0m     [0ma[0m[0;34m,[0m [0mweights[0m [0;34m=[0m [0m_ravel_and_check_weights[0m[0;34m([0m[0ma[0m[0;34m,[0m [0mweights[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    792[0m [0;34m[0m[0m
+[0;32m--> 793[0;31m     [0mbin_edges[0m[0;34m,[0m [0muniform_bins[0m [0;34m=[0m [0m_get_bin_edges[0m[0;34m([0m[0ma[0m[0;34m,[0m [0mbins[0m[0;34m,[0m [0mrange[0m[0;34m,[0m [0mweights[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m    794[0m [0;34m[0m[0m
+[1;32m    795[0m     [0;31m# Histogram is an integer or a float array depending on the weights.[0m[0;34m[0m[0;34m[0m[0m
+
+[0;32m/usr/local/lib/python3.10/dist-packages/numpy/lib/histograms.py[0m in [0;36m_get_bin_edges[0;34m(a, bins, range, weights)[0m
+[1;32m    424[0m             [0;32mraise[0m [0mValueError[0m[0;34m([0m[0;34m'`bins` must be positive, when an integer'[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    425[0m [0;34m[0m[0m
+[0;32m--> 426[0;31m         [0mfirst_edge[0m[0;34m,[0m [0mlast_edge[0m [0;34m=[0m [0m_get_outer_edges[0m[0;34m([0m[0ma[0m[0;34m,[0m [0mrange[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m    427[0m [0;34m[0m[0m
+[1;32m    428[0m     [0;32melif[0m [0mnp[0m[0;34m.[0m[0mndim[0m[0;34m([0m[0mbins[0m[0;34m)[0m [0;34m==[0m [0;36m1[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+
+[0;32m/usr/local/lib/python3.10/dist-packages/numpy/lib/histograms.py[0m in [0;36m_get_outer_edges[0;34m(a, range)[0m
+[1;32m    321[0m         [0mfirst_edge[0m[0;34m,[0m [0mlast_edge[0m [0;34m=[0m [0ma[0m[0;34m.[0m[0mmin[0m[0;34m([0m[0;34m)[0m[0;34m,[0m [0ma[0m[0;34m.[0m[0mmax[0m[0;34m([0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    322[0m         [0;32mif[0m [0;32mnot[0m [0;34m([0m[0mnp[0m[0;34m.[0m[0misfinite[0m[0;34m([0m[0mfirst_edge[0m[0;34m)[0m [0;32mand[0m [0mnp[0m[0;34m.[0m[0misfinite[0m[0;34m([0m[0mlast_edge[0m[0;34m)[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[0;32m--> 323[0;31m             raise ValueError(
+[0m[1;32m    324[0m                 ""autodetected range of [{}, {}] is not finite"".format(first_edge, last_edge))
+[1;32m    325[0m [0;34m[0m[0m
+
+[0;31mValueError[0m: autodetected range of [nan, nan] is not finite
+ValueError: autodetected range of [nan, nan] is not finite
+",ValueError,"autodetected range of [nan, nan] is not finite",True
+torch_4,00b50e68-eadd-3518-96a3-a39daadbb8ba,typeerror,"empty() received an invalid combination of arguments - got (tuple, dtype=NoneType, device=NoneType), but expected one of:","['---------------------------------------------------------------------------', 'TypeError                                 Traceback (most recent call last)', 'Cell In[16], line 49\n     45         batch_outputs = self.out(doc_reps)\n     47         return batch_outputs\n---> 49 model = Model(vocab)\n', 'Cell In[16], line 9, in Model.__init__(self, vocab)\n      6 self.all_parameters = {}\n      8 parameters = []\n----> 9 self.word_encoder = WordLSTMEncoder(vocab)\n     10 self.word_attention = Attention(self.sent_rep_size)\n     11 # filter(判断函数, 可迭代对象)\n', 'Cell In[13], line 15, in WordLSTMEncoder.__init__(self, vocab)\n     12 self.dropout = nn.Dropout(dropout)\n     13 self.word_dims = 100\n---> 15 self.word_embed = nn.Embedding(vocab.word_size, self.word_dims, padding_idx=0)\n     17 extword_embed = vocab.load_pretrained_embs(word2vec_path)\n     18 extword_size, word_dims = extword_embed.shape\n', 'File /opt/conda/lib/python3.10/site-packages/torch/nn/modules/sparse.py:142, in Embedding.__init__(self, num_embeddings, embedding_dim, padding_idx, max_norm, norm_type, scale_grad_by_freq, sparse, _weight, _freeze, device, dtype)\n    140 self.scale_grad_by_freq = scale_grad_by_freq\n    141 if _weight is None:\n--> 142     self.weight = Parameter(torch.empty((num_embeddings, embedding_dim), **factory_kwargs),\n    143                             requires_grad=not _freeze)\n    144     self.reset_parameters()\n    145 else:\n', 'TypeError: empty() received an invalid combination of arguments - got (tuple, dtype=NoneType, device=NoneType), but expected one of:\n * (tuple of ints size, *, tuple of names names, torch.memory_format memory_format, torch.dtype dtype, torch.layout layout, torch.device device, bool pin_memory, bool requires_grad)\n * (tuple of ints size, *, torch.memory_format memory_format, Tensor out, torch.dtype dtype, torch.layout layout, torch.device device, bool pin_memory, bool requires_grad)\n']",/junobench_env/torch_4/torch_4_extension.ipynb,2026-01-14T18:29:54.588087,CellExecutionError,"An error occurred while executing the following cell:
+------------------
+class Model(nn.Module):
+    def __init__(self, vocab):
+        super(Model, self).__init__()
+        self.sent_rep_size = word_hidden_size * 2  # 双向lstm，每个词向量对应的隐藏层维度
+        self.doc_rep_size = sent_hidden_size * 2  # 文档表示大小，每个句子对应隐藏层的维度
+        self.all_parameters = {}
+        
+        parameters = []
+        self.word_encoder = WordLSTMEncoder(vocab)
+        self.word_attention = Attention(self.sent_rep_size)
+        # filter(判断函数, 可迭代对象)
+        parameters.extend(list(filter(lambda p: p.requires_grad, self.word_encoder.parameters())))
+        parameters.extend(list(filter(lambda p: p.requires_grad, self.word_attention.parameters())))
+        self.sent_encoder = SentEncoder(self.sent_rep_size)
+        self.sent_attention = Attention(self.doc_rep_size)
+        parameters.extend(list(filter(lambda p: p.requires_grad, self.sent_encoder.parameters())))
+        parameters.extend(list(filter(lambda p: p.requires_grad, self.sent_attention.parameters())))
+        self.out = nn.Linear(self.doc_rep_size, vocab.label_size, bias=True)
+        parameters.extend(list(filter(lambda p: p.requires_grad, self.out.parameters())))
+        
+        self.to(device)
+        
+        if len(parameters) > 0:
+            self.all_parameters['basic_parameters'] = parameters
+            
+        # 模型总参数量
+        para_num = sum([np.prod(list(p.size())) for p in self.parameters()])
+        
+    def forward(self, batch_inputs):
+        # batch_inputs(batch_inputs1, batch_inputs2): b x doc_len x sent_len
+        # batch_masks: b x doc_len x sent_len
+        # 不明白为什么这里要同时输入两个batch？？？？？？？
+        batch_inputs1, batch_inputs2, batch_masks = batch_inputs
+        batch_size, max_doc_len, max_sent_len = batch_inputs1.shape[0], batch_inputs1.shape[1], batch_inputs1.shape[2]
+        batch_inputs1 = batch_inputs1.view(batch_size * max_doc_len, max_sent_len)
+        batch_inputs2 = batch_inputs2.view(batch_size * max_doc_len, max_sent_len)
+        batch_masks = batch_masks.view(batch_size * max_doc_len, max_sent_len)
+        batch_hiddens = self.word_encoder(batch_inputs1, batch_inputs2, batch_masks)
+        sent_reps, atten_scores = self.word_attention(batch_hiddens, batch_masks)
+        sent_reps = sent_reps.view(batch_size, max_doc_len, self.sent_rep_size)
+        batch_masks = batch_masks.view(batch_size, max_doc_len, max_sent_len)
+        sent_masks = batch_masks.bool().any(2).float()
+        sent_hiddens = self.sent_encoder(sent_reps, sent_masks)
+        doc_reps, atten_scores = self.sent_attention(sent_hiddens, sent_masks)
+        batch_outputs = self.out(doc_reps)
+        
+        return batch_outputs
+    
+model = Model(vocab)
+------------------
+
+[0;31m---------------------------------------------------------------------------[0m
+[0;31mTypeError[0m                                 Traceback (most recent call last)
+[0;32m<ipython-input-16-9dcaca8d46d8>[0m in [0;36m<cell line: 49>[0;34m()[0m
+[1;32m     47[0m         [0;32mreturn[0m [0mbatch_outputs[0m[0;34m[0m[0;34m[0m[0m
+[1;32m     48[0m [0;34m[0m[0m
+[0;32m---> 49[0;31m [0mmodel[0m [0;34m=[0m [0mModel[0m[0;34m([0m[0mvocab[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m
+[0;32m<ipython-input-16-9dcaca8d46d8>[0m in [0;36m__init__[0;34m(self, vocab)[0m
+[1;32m     16[0m         [0mparameters[0m[0;34m.[0m[0mextend[0m[0;34m([0m[0mlist[0m[0;34m([0m[0mfilter[0m[0;34m([0m[0;32mlambda[0m [0mp[0m[0;34m:[0m [0mp[0m[0;34m.[0m[0mrequires_grad[0m[0;34m,[0m [0mself[0m[0;34m.[0m[0msent_encoder[0m[0;34m.[0m[0mparameters[0m[0;34m([0m[0;34m)[0m[0;34m)[0m[0;34m)[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[1;32m     17[0m         [0mparameters[0m[0;34m.[0m[0mextend[0m[0;34m([0m[0mlist[0m[0;34m([0m[0mfilter[0m[0;34m([0m[0;32mlambda[0m [0mp[0m[0;34m:[0m [0mp[0m[0;34m.[0m[0mrequires_grad[0m[0;34m,[0m [0mself[0m[0;34m.[0m[0msent_attention[0m[0;34m.[0m[0mparameters[0m[0;34m([0m[0;34m)[0m[0;34m)[0m[0;34m)[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0;32m---> 18[0;31m         [0mself[0m[0;34m.[0m[0mout[0m [0;34m=[0m [0mnn[0m[0;34m.[0m[0mLinear[0m[0;34m([0m[0mself[0m[0;34m.[0m[0mdoc_rep_size[0m[0;34m,[0m [0mvocab[0m[0;34m.[0m[0mlabel_size[0m[0;34m,[0m [0mbias[0m[0;34m=[0m[0;32mTrue[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m     19[0m         [0mparameters[0m[0;34m.[0m[0mextend[0m[0;34m([0m[0mlist[0m[0;34m([0m[0mfilter[0m[0;34m([0m[0;32mlambda[0m [0mp[0m[0;34m:[0m [0mp[0m[0;34m.[0m[0mrequires_grad[0m[0;34m,[0m [0mself[0m[0;34m.[0m[0mout[0m[0;34m.[0m[0mparameters[0m[0;34m([0m[0;34m)[0m[0;34m)[0m[0;34m)[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[1;32m     20[0m [0;34m[0m[0m
+
+[0;32m/usr/local/lib/python3.10/dist-packages/torch/nn/modules/linear.py[0m in [0;36m__init__[0;34m(self, in_features, out_features, bias, device, dtype)[0m
+[1;32m     83[0m         [0mself[0m[0;34m.[0m[0min_features[0m [0;34m=[0m [0min_features[0m[0;34m[0m[0;34m[0m[0m
+[1;32m     84[0m         [0mself[0m[0;34m.[0m[0mout_features[0m [0;34m=[0m [0mout_features[0m[0;34m[0m[0;34m[0m[0m
+[0;32m---> 85[0;31m         [0mself[0m[0;34m.[0m[0mweight[0m [0;34m=[0m [0mParameter[0m[0;34m([0m[0mtorch[0m[0;34m.[0m[0mempty[0m[0;34m([0m[0;34m([0m[0mout_features[0m[0;34m,[0m [0min_features[0m[0;34m)[0m[0;34m,[0m [0;34m**[0m[0mfactory_kwargs[0m[0;34m)[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m     86[0m         [0;32mif[0m [0mbias[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[1;32m     87[0m             [0mself[0m[0;34m.[0m[0mbias[0m [0;34m=[0m [0mParameter[0m[0;34m([0m[0mtorch[0m[0;34m.[0m[0mempty[0m[0;34m([0m[0mout_features[0m[0;34m,[0m [0;34m**[0m[0mfactory_kwargs[0m[0;34m)[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+
+[0;31mTypeError[0m: empty() received an invalid combination of arguments - got (tuple, dtype=NoneType, device=NoneType), but expected one of:
+ * (tuple of ints size, *, tuple of names names, torch.memory_format memory_format, torch.dtype dtype, torch.layout layout, torch.device device, bool pin_memory, bool requires_grad)
+ * (tuple of ints size, *, torch.memory_format memory_format, Tensor out, torch.dtype dtype, torch.layout layout, torch.device device, bool pin_memory, bool requires_grad)
+
+TypeError: empty() received an invalid combination of arguments - got (tuple, dtype=NoneType, device=NoneType), but expected one of:
+ * (tuple of ints size, *, tuple of names names, torch.memory_format memory_format, torch.dtype dtype, torch.layout layout, torch.device device, bool pin_memory, bool requires_grad)
+ * (tuple of ints size, *, torch.memory_format memory_format, Tensor out, torch.dtype dtype, torch.layout layout, torch.device device, bool pin_memory, bool requires_grad)
+
+",TypeError,"empty() received an invalid combination of arguments - got (tuple, dtype=NoneType, device=NoneType), but expected one of:",True
+sklearn_6,b79cc309-bf77-3d50-ae95-0ecd8ef17bb9,valueerror,The feature names should match those that were passed during fit.,"['---------------------------------------------------------------------------', 'ValueError                                Traceback (most recent call last)', 'Cell In[46], line 1\n----> 1 predictions = FReg.predict(test_ds)\n      2 submissions_df = pd.DataFrame({\n      3     ""ID"" : test_data[\'ID\'],\n      4     ""Predictions"" : predictions\n      5 })\n      7 submissions_df.to_csv(\'submission_csv\', index = False)\n', 'File /opt/conda/lib/python3.10/site-packages/sklearn/ensemble/_forest.py:981, in ForestRegressor.predict(self, X)\n    979 check_is_fitted(self)\n    980 # Check data\n--> 981 X = self._validate_X_predict(X)\n    983 # Assign chunk of trees to jobs\n    984 n_jobs, _, _ = _partition_estimators(self.n_estimators, self.n_jobs)\n', 'File /opt/conda/lib/python3.10/site-packages/sklearn/ensemble/_forest.py:602, in BaseForest._validate_X_predict(self, X)\n    599 """"""\n    600 Validate X whenever one tries to predict, apply, predict_proba.""""""\n    601 check_is_fitted(self)\n--> 602 X = self._validate_data(X, dtype=DTYPE, accept_sparse=""csr"", reset=False)\n    603 if issparse(X) and (X.indices.dtype != np.intc or X.indptr.dtype != np.intc):\n    604     raise ValueError(""No support for np.int64 index based sparse matrices"")\n', 'File /opt/conda/lib/python3.10/site-packages/sklearn/base.py:548, in BaseEstimator._validate_data(self, X, y, reset, validate_separately, **check_params)\n    483 def _validate_data(\n    484     self,\n    485     X=""no_validation"",\n   (...)\n    489     **check_params,\n    490 ):\n    491     """"""Validate input data and set or check the `n_features_in_` attribute.\n    492 \n    493     Parameters\n   (...)\n    546         validated.\n    547     """"""\n--> 548     self._check_feature_names(X, reset=reset)\n    550     if y is None and self._get_tags()[""requires_y""]:\n    551         raise ValueError(\n    552             f""This {self.__class__.__name__} estimator ""\n    553             ""requires y to be passed, but the target y is None.""\n    554         )\n', 'File /opt/conda/lib/python3.10/site-packages/sklearn/base.py:481, in BaseEstimator._check_feature_names(self, X, reset)\n    476 if not missing_names and not unexpected_names:\n    477     message += (\n    478         ""Feature names must be in the same order as they were in fit.\\n""\n    479     )\n--> 481 raise ValueError(message)\n', 'ValueError: The feature names should match those that were passed during fit.\nFeature names seen at fit time, yet now missing:\n- BsmtFullBath\n- BsmtHalfBath\n- Functional\n- MSZoning\n- Utilities\n']",/junobench_env/sklearn_6/sklearn_6_extension.ipynb,2026-01-14T18:18:07.804892,CellExecutionError,"An error occurred while executing the following cell:
+------------------
+predictions = FReg.predict(test_ds)
+submissions_df = pd.DataFrame({
+    ""ID"" : test_ds_ids, # test_data['ID'], # fix for crash isolation purpose
+    ""Predictions"" : predictions
+})
+
+# submissions_df.to_csv('submission_csv', index = False)
+------------------
+
+[0;31m---------------------------------------------------------------------------[0m
+[0;31mValueError[0m                                Traceback (most recent call last)
+[0;32m<ipython-input-47-0b091944b5d9>[0m in [0;36m<cell line: 1>[0;34m()[0m
+[0;32m----> 1[0;31m [0mpredictions[0m [0;34m=[0m [0mFReg[0m[0;34m.[0m[0mpredict[0m[0;34m([0m[0mtest_ds[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m      2[0m submissions_df = pd.DataFrame({
+[1;32m      3[0m     [0;34m""ID""[0m [0;34m:[0m [0mtest_ds_ids[0m[0;34m,[0m [0;31m# test_data['ID'], # fix for crash isolation purpose[0m[0;34m[0m[0;34m[0m[0m
+[1;32m      4[0m     [0;34m""Predictions""[0m [0;34m:[0m [0mpredictions[0m[0;34m[0m[0;34m[0m[0m
+[1;32m      5[0m })
+
+[0;32m/usr/local/lib/python3.10/dist-packages/sklearn/ensemble/_forest.py[0m in [0;36mpredict[0;34m(self, X)[0m
+[1;32m    979[0m         [0mcheck_is_fitted[0m[0;34m([0m[0mself[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    980[0m         [0;31m# Check data[0m[0;34m[0m[0;34m[0m[0m
+[0;32m--> 981[0;31m         [0mX[0m [0;34m=[0m [0mself[0m[0;34m.[0m[0m_validate_X_predict[0m[0;34m([0m[0mX[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m    982[0m [0;34m[0m[0m
+[1;32m    983[0m         [0;31m# Assign chunk of trees to jobs[0m[0;34m[0m[0;34m[0m[0m
+
+[0;32m/usr/local/lib/python3.10/dist-packages/sklearn/ensemble/_forest.py[0m in [0;36m_validate_X_predict[0;34m(self, X)[0m
+[1;32m    600[0m         Validate X whenever one tries to predict, apply, predict_proba.""""""
+[1;32m    601[0m         [0mcheck_is_fitted[0m[0;34m([0m[0mself[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0;32m--> 602[0;31m         [0mX[0m [0;34m=[0m [0mself[0m[0;34m.[0m[0m_validate_data[0m[0;34m([0m[0mX[0m[0;34m,[0m [0mdtype[0m[0;34m=[0m[0mDTYPE[0m[0;34m,[0m [0maccept_sparse[0m[0;34m=[0m[0;34m""csr""[0m[0;34m,[0m [0mreset[0m[0;34m=[0m[0;32mFalse[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m    603[0m         [0;32mif[0m [0missparse[0m[0;34m([0m[0mX[0m[0;34m)[0m [0;32mand[0m [0;34m([0m[0mX[0m[0;34m.[0m[0mindices[0m[0;34m.[0m[0mdtype[0m [0;34m!=[0m [0mnp[0m[0;34m.[0m[0mintc[0m [0;32mor[0m [0mX[0m[0;34m.[0m[0mindptr[0m[0;34m.[0m[0mdtype[0m [0;34m!=[0m [0mnp[0m[0;34m.[0m[0mintc[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    604[0m             [0;32mraise[0m [0mValueError[0m[0;34m([0m[0;34m""No support for np.int64 index based sparse matrices""[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+
+[0;32m/usr/local/lib/python3.10/dist-packages/sklearn/base.py[0m in [0;36m_validate_data[0;34m(self, X, y, reset, validate_separately, **check_params)[0m
+[1;32m    546[0m             [0mvalidated[0m[0;34m.[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    547[0m         """"""
+[0;32m--> 548[0;31m         [0mself[0m[0;34m.[0m[0m_check_feature_names[0m[0;34m([0m[0mX[0m[0;34m,[0m [0mreset[0m[0;34m=[0m[0mreset[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m    549[0m [0;34m[0m[0m
+[1;32m    550[0m         [0;32mif[0m [0my[0m [0;32mis[0m [0;32mNone[0m [0;32mand[0m [0mself[0m[0;34m.[0m[0m_get_tags[0m[0;34m([0m[0;34m)[0m[0;34m[[0m[0;34m""requires_y""[0m[0;34m][0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+
+[0;32m/usr/local/lib/python3.10/dist-packages/sklearn/base.py[0m in [0;36m_check_feature_names[0;34m(self, X, reset)[0m
+[1;32m    479[0m                 )
+[1;32m    480[0m [0;34m[0m[0m
+[0;32m--> 481[0;31m             [0;32mraise[0m [0mValueError[0m[0;34m([0m[0mmessage[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m    482[0m [0;34m[0m[0m
+[1;32m    483[0m     def _validate_data(
+
+[0;31mValueError[0m: The feature names should match those that were passed during fit.
+Feature names seen at fit time, yet now missing:
+- BsmtFullBath
+- BsmtHalfBath
+- Functional
+- MSZoning
+- Utilities
+
+ValueError: The feature names should match those that were passed during fit.
+Feature names seen at fit time, yet now missing:
+- BsmtFullBath
+- BsmtHalfBath
+- Functional
+- MSZoning
+- Utilities
+
+",ValueError,The feature names should match those that were passed during fit.,True
+pandas_8,b9825c16-c276-3eb3-bccd-a6461718d83f,valueerror,"Unable to parse string ""$36,945 "" at position 0","['---------------------------------------------------------------------------', 'ValueError                                Traceback (most recent call last)', '/opt/conda/lib/python3.7/site-packages/pandas/_libs/lib.pyx in pandas._libs.lib.maybe_convert_numeric()\n', 'ValueError: Unable to parse string ""$36,945 ""', '\nDuring handling of the above exception, another exception occurred:\n', 'ValueError                                Traceback (most recent call last)', '/tmp/ipykernel_27/3879484352.py in <module>\n----> 1 df[""MSRP""]=pd.to_numeric(df[""MSRP""])\n', '/opt/conda/lib/python3.7/site-packages/pandas/core/tools/numeric.py in to_numeric(arg, errors, downcast)\n    182         try:\n    183             values, _ = lib.maybe_convert_numeric(\n--> 184                 values, set(), coerce_numeric=coerce_numeric\n    185             )\n    186         except (ValueError, TypeError):\n', '/opt/conda/lib/python3.7/site-packages/pandas/_libs/lib.pyx in pandas._libs.lib.maybe_convert_numeric()\n', 'ValueError: Unable to parse string ""$36,945 "" at position 0']",/junobench_env/pandas_8/pandas_8_extension.ipynb,2026-01-14T15:57:05.522537,CellExecutionError,"An error occurred while executing the following cell:
+------------------
+# df[""MSRP""]=pd.to_numeric(df[""MSRP""]) 
+code: df[""MSRP""] = df[""MSRP""].astype(str).str.replace('$', '', regex=False).str.replace(',', '', regex=False) 
+df[""MSRP""] = pd.to_numeric(df[""MSRP""])
+------------------
+
+[0;31m---------------------------------------------------------------------------[0m
+[0;31mValueError[0m                                Traceback (most recent call last)
+[0;32mlib.pyx[0m in [0;36mpandas._libs.lib.maybe_convert_numeric[0;34m()[0m
+
+[0;31mValueError[0m: Unable to parse string ""$36,945 ""
+
+During handling of the above exception, another exception occurred:
+
+[0;31mValueError[0m                                Traceback (most recent call last)
+[0;32m<ipython-input-9-3087a4dda274>[0m in [0;36m<cell line: 3>[0;34m()[0m
+[1;32m      1[0m [0;31m# df[""MSRP""]=pd.to_numeric(df[""MSRP""])[0m[0;34m[0m[0;34m[0m[0m
+[1;32m      2[0m [0mcode[0m[0;34m:[0m [0mdf[0m[0;34m[[0m[0;34m""MSRP""[0m[0;34m][0m [0;34m=[0m [0mdf[0m[0;34m[[0m[0;34m""MSRP""[0m[0;34m][0m[0;34m.[0m[0mastype[0m[0;34m([0m[0mstr[0m[0;34m)[0m[0;34m.[0m[0mstr[0m[0;34m.[0m[0mreplace[0m[0;34m([0m[0;34m'$'[0m[0;34m,[0m [0;34m''[0m[0;34m,[0m [0mregex[0m[0;34m=[0m[0;32mFalse[0m[0;34m)[0m[0;34m.[0m[0mstr[0m[0;34m.[0m[0mreplace[0m[0;34m([0m[0;34m','[0m[0;34m,[0m [0;34m''[0m[0;34m,[0m [0mregex[0m[0;34m=[0m[0;32mFalse[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0;32m----> 3[0;31m [0mdf[0m[0;34m[[0m[0;34m""MSRP""[0m[0;34m][0m [0;34m=[0m [0mpd[0m[0;34m.[0m[0mto_numeric[0m[0;34m([0m[0mdf[0m[0;34m[[0m[0;34m""MSRP""[0m[0;34m][0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m
+[0;32m/usr/local/lib/python3.10/dist-packages/pandas/core/tools/numeric.py[0m in [0;36mto_numeric[0;34m(arg, errors, downcast, dtype_backend)[0m
+[1;32m    220[0m         [0mcoerce_numeric[0m [0;34m=[0m [0merrors[0m [0;32mnot[0m [0;32min[0m [0;34m([0m[0;34m""ignore""[0m[0;34m,[0m [0;34m""raise""[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    221[0m         [0;32mtry[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[0;32m--> 222[0;31m             values, new_mask = lib.maybe_convert_numeric(  # type: ignore[call-overload]  # noqa: E501
+[0m[1;32m    223[0m                 [0mvalues[0m[0;34m,[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    224[0m                 [0mset[0m[0;34m([0m[0;34m)[0m[0;34m,[0m[0;34m[0m[0;34m[0m[0m
+
+[0;32mlib.pyx[0m in [0;36mpandas._libs.lib.maybe_convert_numeric[0;34m()[0m
+
+[0;31mValueError[0m: Unable to parse string ""$36,945 "" at position 0
+ValueError: Unable to parse string ""$36,945 "" at position 0
+",ValueError,"Unable to parse string ""$36,945 "" at position 0",True
+pandas_11,ba41a161-f8dc-3650-87ba-65a3367e0ee8,keyerror,'Hour',"['---------------------------------------------------------------------------', 'KeyError                                  Traceback (most recent call last)', 'File /opt/conda/lib/python3.10/site-packages/pandas/core/indexes/base.py:3802, in Index.get_loc(self, key, method, tolerance)\n   3801 try:\n-> 3802     return self._engine.get_loc(casted_key)\n   3803 except KeyError as err:\n', 'File /opt/conda/lib/python3.10/site-packages/pandas/_libs/index.pyx:138, in pandas._libs.index.IndexEngine.get_loc()\n', 'File /opt/conda/lib/python3.10/site-packages/pandas/_libs/index.pyx:165, in pandas._libs.index.IndexEngine.get_loc()\n', 'File pandas/_libs/hashtable_class_helper.pxi:5745, in pandas._libs.hashtable.PyObjectHashTable.get_item()\n', 'File pandas/_libs/hashtable_class_helper.pxi:5753, in pandas._libs.hashtable.PyObjectHashTable.get_item()\n', ""KeyError: 'Hour'"", '\nThe above exception was the direct cause of the following exception:\n', 'KeyError                                  Traceback (most recent call last)', 'Cell In[23], line 14\n     12 i += 1\n     13 plt.subplot(8,4,i)\n---> 14 sns.kdeplot(t0[feature], bw=0.5,label=""Class = 0"");\n     15 sns.kdeplot(t1[feature], bw=0.5,label=""Class = 1"");\n     16 plt.xlabel(feature, fontsize=12)\n', 'File /opt/conda/lib/python3.10/site-packages/pandas/core/frame.py:3807, in DataFrame.__getitem__(self, key)\n   3805 if self.columns.nlevels > 1:\n   3806     return self._getitem_multilevel(key)\n-> 3807 indexer = self.columns.get_loc(key)\n   3808 if is_integer(indexer):\n   3809     indexer = [indexer]\n', 'File /opt/conda/lib/python3.10/site-packages/pandas/core/indexes/base.py:3804, in Index.get_loc(self, key, method, tolerance)\n   3802     return self._engine.get_loc(casted_key)\n   3803 except KeyError as err:\n-> 3804     raise KeyError(key) from err\n   3805 except TypeError:\n   3806     # If we have a listlike key, _check_indexing_error will raise\n   3807     #  InvalidIndexError. Otherwise we fall through and re-raise\n   3808     #  the TypeError.\n   3809     self._check_indexing_error(key)\n', ""KeyError: 'Hour'""]",/junobench_env/pandas_11/pandas_11_extension.ipynb,2026-01-14T18:37:22.250879,CellExecutionError,"An error occurred while executing the following cell:
+------------------
+var = data_df.columns.values
+
+i = 0
+t0 = df.loc[df['Class'] == 0]
+t1 = df.loc[df['Class'] == 1]
+
+sns.set_style('whitegrid')
+plt.figure()
+fig, ax = plt.subplots(8,4,figsize=(16,28))
+
+for feature in var:
+    i += 1
+    plt.subplot(8,4,i)
+    sns.kdeplot(t0[feature], bw=0.5,label=""Class = 0"");
+    sns.kdeplot(t1[feature], bw=0.5,label=""Class = 1"");
+    plt.xlabel(feature, fontsize=12)
+    locs, labels = plt.xticks()
+    plt.tick_params(axis='both', which='major', labelsize=12)
+plt.show();
+------------------
+
+[0;31m---------------------------------------------------------------------------[0m
+[0;31mKeyError[0m                                  Traceback (most recent call last)
+[0;32m/usr/local/lib/python3.10/dist-packages/pandas/core/indexes/base.py[0m in [0;36mget_loc[0;34m(self, key)[0m
+[1;32m   3652[0m         [0;32mtry[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[0;32m-> 3653[0;31m             [0;32mreturn[0m [0mself[0m[0;34m.[0m[0m_engine[0m[0;34m.[0m[0mget_loc[0m[0;34m([0m[0mcasted_key[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m   3654[0m         [0;32mexcept[0m [0mKeyError[0m [0;32mas[0m [0merr[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+
+[0;32m/usr/local/lib/python3.10/dist-packages/pandas/_libs/index.pyx[0m in [0;36mpandas._libs.index.IndexEngine.get_loc[0;34m()[0m
+
+[0;32m/usr/local/lib/python3.10/dist-packages/pandas/_libs/index.pyx[0m in [0;36mpandas._libs.index.IndexEngine.get_loc[0;34m()[0m
+
+[0;32mpandas/_libs/hashtable_class_helper.pxi[0m in [0;36mpandas._libs.hashtable.PyObjectHashTable.get_item[0;34m()[0m
+
+[0;32mpandas/_libs/hashtable_class_helper.pxi[0m in [0;36mpandas._libs.hashtable.PyObjectHashTable.get_item[0;34m()[0m
+
+[0;31mKeyError[0m: 'Hour'
+
+The above exception was the direct cause of the following exception:
+
+[0;31mKeyError[0m                                  Traceback (most recent call last)
+[0;32m<ipython-input-21-1bc6ab312785>[0m in [0;36m<cell line: 11>[0;34m()[0m
+[1;32m     12[0m     [0mi[0m [0;34m+=[0m [0;36m1[0m[0;34m[0m[0;34m[0m[0m
+[1;32m     13[0m     [0mplt[0m[0;34m.[0m[0msubplot[0m[0;34m([0m[0;36m8[0m[0;34m,[0m[0;36m4[0m[0;34m,[0m[0mi[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0;32m---> 14[0;31m     [0msns[0m[0;34m.[0m[0mkdeplot[0m[0;34m([0m[0mt0[0m[0;34m[[0m[0mfeature[0m[0;34m][0m[0;34m,[0m [0mbw[0m[0;34m=[0m[0;36m0.5[0m[0;34m,[0m[0mlabel[0m[0;34m=[0m[0;34m""Class = 0""[0m[0;34m)[0m[0;34m;[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m     15[0m     [0msns[0m[0;34m.[0m[0mkdeplot[0m[0;34m([0m[0mt1[0m[0;34m[[0m[0mfeature[0m[0;34m][0m[0;34m,[0m [0mbw[0m[0;34m=[0m[0;36m0.5[0m[0;34m,[0m[0mlabel[0m[0;34m=[0m[0;34m""Class = 1""[0m[0;34m)[0m[0;34m;[0m[0;34m[0m[0;34m[0m[0m
+[1;32m     16[0m     [0mplt[0m[0;34m.[0m[0mxlabel[0m[0;34m([0m[0mfeature[0m[0;34m,[0m [0mfontsize[0m[0;34m=[0m[0;36m12[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+
+[0;32m/usr/local/lib/python3.10/dist-packages/pandas/core/frame.py[0m in [0;36m__getitem__[0;34m(self, key)[0m
+[1;32m   3759[0m             [0;32mif[0m [0mself[0m[0;34m.[0m[0mcolumns[0m[0;34m.[0m[0mnlevels[0m [0;34m>[0m [0;36m1[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[1;32m   3760[0m                 [0;32mreturn[0m [0mself[0m[0;34m.[0m[0m_getitem_multilevel[0m[0;34m([0m[0mkey[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0;32m-> 3761[0;31m             [0mindexer[0m [0;34m=[0m [0mself[0m[0;34m.[0m[0mcolumns[0m[0;34m.[0m[0mget_loc[0m[0;34m([0m[0mkey[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m   3762[0m             [0;32mif[0m [0mis_integer[0m[0;34m([0m[0mindexer[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[1;32m   3763[0m                 [0mindexer[0m [0;34m=[0m [0;34m[[0m[0mindexer[0m[0;34m][0m[0;34m[0m[0;34m[0m[0m
+
+[0;32m/usr/local/lib/python3.10/dist-packages/pandas/core/indexes/base.py[0m in [0;36mget_loc[0;34m(self, key)[0m
+[1;32m   3653[0m             [0;32mreturn[0m [0mself[0m[0;34m.[0m[0m_engine[0m[0;34m.[0m[0mget_loc[0m[0;34m([0m[0mcasted_key[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[1;32m   3654[0m         [0;32mexcept[0m [0mKeyError[0m [0;32mas[0m [0merr[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[0;32m-> 3655[0;31m             [0;32mraise[0m [0mKeyError[0m[0;34m([0m[0mkey[0m[0;34m)[0m [0;32mfrom[0m [0merr[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m   3656[0m         [0;32mexcept[0m [0mTypeError[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[1;32m   3657[0m             [0;31m# If we have a listlike key, _check_indexing_error will raise[0m[0;34m[0m[0;34m[0m[0m
+
+[0;31mKeyError[0m: 'Hour'
+KeyError: 'Hour'
+",KeyError,'Hour',True
+numpy_14,96a23bf1-6168-3827-8739-99b9cbfc36f2,axiserror,axis 1 is out of bounds for array of dimension 1,"['---------------------------------------------------------------------------', 'AxisError                                 Traceback (most recent call last)', '/tmp/ipykernel_23/2965731218.py in <module>\n     11 # Convert one-hot encoded labels to integer labels\n     12 y_true_onehot = test_generator.classes\n---> 13 y_true_classes = np.argmax(y_true_onehot, axis=1)\n', '<__array_function__ internals> in argmax(*args, **kwargs)\n', '/opt/conda/lib/python3.7/site-packages/numpy/core/fromnumeric.py in argmax(a, axis, out)\n   1193 \n   1194     """"""\n-> 1195     return _wrapfunc(a, \'argmax\', axis=axis, out=out)\n   1196 \n   1197 \n', '/opt/conda/lib/python3.7/site-packages/numpy/core/fromnumeric.py in _wrapfunc(obj, method, *args, **kwds)\n     55 \n     56     try:\n---> 57         return bound(*args, **kwds)\n     58     except TypeError:\n     59         # A TypeError occurs if the object does have such a method in its\n', 'AxisError: axis 1 is out of bounds for array of dimension 1']",/junobench_env/numpy_14/numpy_14_extension.ipynb,2026-01-14T17:26:02.506571,CellExecutionError,"An error occurred while executing the following cell:
+------------------
+y_true_classes = np.argmax(test_generator.classes, axis=1)
+------------------
+
+[0;31m---------------------------------------------------------------------------[0m
+[0;31mAxisError[0m                                 Traceback (most recent call last)
+[0;32m<ipython-input-22-0fa97c5658e1>[0m in [0;36m<cell line: 1>[0;34m()[0m
+[0;32m----> 1[0;31m [0my_true_classes[0m [0;34m=[0m [0mnp[0m[0;34m.[0m[0margmax[0m[0;34m([0m[0mtest_generator[0m[0;34m.[0m[0mclasses[0m[0;34m,[0m [0maxis[0m[0;34m=[0m[0;36m1[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m
+[0;32m/usr/local/lib/python3.10/dist-packages/numpy/core/fromnumeric.py[0m in [0;36margmax[0;34m(a, axis, out, keepdims)[0m
+[1;32m   1227[0m     """"""
+[1;32m   1228[0m     [0mkwds[0m [0;34m=[0m [0;34m{[0m[0;34m'keepdims'[0m[0;34m:[0m [0mkeepdims[0m[0;34m}[0m [0;32mif[0m [0mkeepdims[0m [0;32mis[0m [0;32mnot[0m [0mnp[0m[0;34m.[0m[0m_NoValue[0m [0;32melse[0m [0;34m{[0m[0;34m}[0m[0;34m[0m[0;34m[0m[0m
+[0;32m-> 1229[0;31m     [0;32mreturn[0m [0m_wrapfunc[0m[0;34m([0m[0ma[0m[0;34m,[0m [0;34m'argmax'[0m[0;34m,[0m [0maxis[0m[0;34m=[0m[0maxis[0m[0;34m,[0m [0mout[0m[0;34m=[0m[0mout[0m[0;34m,[0m [0;34m**[0m[0mkwds[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m   1230[0m [0;34m[0m[0m
+[1;32m   1231[0m [0;34m[0m[0m
+
+[0;32m/usr/local/lib/python3.10/dist-packages/numpy/core/fromnumeric.py[0m in [0;36m_wrapfunc[0;34m(obj, method, *args, **kwds)[0m
+[1;32m     57[0m [0;34m[0m[0m
+[1;32m     58[0m     [0;32mtry[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[0;32m---> 59[0;31m         [0;32mreturn[0m [0mbound[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwds[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m     60[0m     [0;32mexcept[0m [0mTypeError[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[1;32m     61[0m         [0;31m# A TypeError occurs if the object does have such a method in its[0m[0;34m[0m[0;34m[0m[0m
+
+[0;31mAxisError[0m: axis 1 is out of bounds for array of dimension 1
+AxisError: axis 1 is out of bounds for array of dimension 1
+",AxisError,axis 1 is out of bounds for array of dimension 1,True
+numpy_15,65328e01-47ef-32f9-af6d-3ba8a7897a46,valueerror,"shapes (75,4) and (1,4) not aligned: 4 (dim 1) != 1 (dim 0)","['---------------------------------------------------------------------------', 'ValueError                                Traceback (most recent call last)', '/tmp/ipykernel_27/3395597747.py in <module>\n      4 w, b = weightInitialization(n_features)\n      5 #Gradient Descent\n----> 6 coeff, gradient, costs = model_predict(w, b, X_tr_arr, y_tr_arr, learning_rate=0.0001,no_iterations=4500)\n      7 #Final prediction\n      8 w = coeff[""w""]\n', '/tmp/ipykernel_27/2662648926.py in model_predict(w, b, X, Y, learning_rate, no_iterations)\n      3     for i in range(no_iterations):\n      4         #\n----> 5         grads, cost = model_optimize(w,b,X,Y)\n      6         #\n      7         dw = grads[""dw""]\n', '/tmp/ipykernel_27/1118609748.py in model_optimize(w, b, X, Y)\n     11 \n     12     # Prediction\n---> 13     final_result = sigmoid(np.dot(X, w) + b)\n     14     cost = (-1/m) * np.sum(Y * np.log(final_result) + (1 - Y) * np.log(1 - final_result))\n     15 \n', '<__array_function__ internals> in dot(*args, **kwargs)\n', 'ValueError: shapes (75,4) and (1,4) not aligned: 4 (dim 1) != 1 (dim 0)']",/junobench_env/numpy_15/numpy_15_extension.ipynb,2026-01-14T16:38:01.214955,CellExecutionError,"An error occurred while executing the following cell:
+------------------
+#Get number of features
+n_features = X_tr_arr.shape[1]
+print('Number of Features', n_features)
+w, b = weightInitialization(n_features)
+#Gradient Descent
+coeff, gradient, costs = model_predict(w, b, X_tr_arr, y_tr_arr, learning_rate=0.0001,no_iterations=4500)
+#Final prediction
+w = coeff[""w""]
+b = coeff[""b""]
+print('Optimized weights', w)
+print('Optimized intercept',b)
+#
+final_train_pred = sigmoid_activation(np.dot(w,X_tr_arr.T)+b)
+final_test_pred = sigmoid_activation(np.dot(w,X_ts_arr.T)+b)
+#
+m_tr =  X_tr_arr.shape[0]
+m_ts =  X_ts_arr.shape[0]
+#
+y_tr_pred = predict(final_train_pred, m_tr)
+print('Training Accuracy',accuracy_score(y_tr_pred.T, y_tr_arr))
+#
+y_ts_pred = predict(final_test_pred, m_ts)
+print('Test Accuracy',accuracy_score(y_ts_pred.T, y_ts_arr))
+------------------
+
+[0;31m---------------------------------------------------------------------------[0m
+[0;31mValueError[0m                                Traceback (most recent call last)
+[0;32m<ipython-input-29-2e390b463717>[0m in [0;36m<cell line: 6>[0;34m()[0m
+[1;32m      4[0m [0mw[0m[0;34m,[0m [0mb[0m [0;34m=[0m [0mweightInitialization[0m[0;34m([0m[0mn_features[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[1;32m      5[0m [0;31m#Gradient Descent[0m[0;34m[0m[0;34m[0m[0m
+[0;32m----> 6[0;31m [0mcoeff[0m[0;34m,[0m [0mgradient[0m[0;34m,[0m [0mcosts[0m [0;34m=[0m [0mmodel_predict[0m[0;34m([0m[0mw[0m[0;34m,[0m [0mb[0m[0;34m,[0m [0mX_tr_arr[0m[0;34m,[0m [0my_tr_arr[0m[0;34m,[0m [0mlearning_rate[0m[0;34m=[0m[0;36m0.0001[0m[0;34m,[0m[0mno_iterations[0m[0;34m=[0m[0;36m4500[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m      7[0m [0;31m#Final prediction[0m[0;34m[0m[0;34m[0m[0m
+[1;32m      8[0m [0mw[0m [0;34m=[0m [0mcoeff[0m[0;34m[[0m[0;34m""w""[0m[0;34m][0m[0;34m[0m[0;34m[0m[0m
+
+[0;32m<ipython-input-27-f28af5fdf927>[0m in [0;36mmodel_predict[0;34m(w, b, X, Y, learning_rate, no_iterations)[0m
+[1;32m      3[0m     [0;32mfor[0m [0mi[0m [0;32min[0m [0mrange[0m[0;34m([0m[0mno_iterations[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[1;32m      4[0m         [0;31m#[0m[0;34m[0m[0;34m[0m[0m
+[0;32m----> 5[0;31m         [0mgrads[0m[0;34m,[0m [0mcost[0m [0;34m=[0m [0mmodel_optimize[0m[0;34m([0m[0mw[0m[0;34m,[0m[0mb[0m[0;34m,[0m[0mX[0m[0;34m,[0m[0mY[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m      6[0m         [0;31m#[0m[0;34m[0m[0;34m[0m[0m
+[1;32m      7[0m         [0mdw[0m [0;34m=[0m [0mgrads[0m[0;34m[[0m[0;34m""dw""[0m[0;34m][0m[0;34m[0m[0;34m[0m[0m
+
+[0;32m<ipython-input-26-c5c1f7b34b69>[0m in [0;36mmodel_optimize[0;34m(w, b, X, Y)[0m
+[1;32m     12[0m     [0mm[0m [0;34m=[0m [0mX[0m[0;34m.[0m[0mshape[0m[0;34m[[0m[0;36m0[0m[0;34m][0m[0;34m[0m[0;34m[0m[0m
+[1;32m     13[0m [0;34m[0m[0m
+[0;32m---> 14[0;31m     [0mfinal_result[0m [0;34m=[0m [0msigmoid[0m[0;34m([0m[0mnp[0m[0;34m.[0m[0mdot[0m[0;34m([0m[0mX[0m[0;34m,[0m [0mw[0m[0;34m)[0m [0;34m+[0m [0mb[0m[0;34m)[0m  [0;31m# (m, 1)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m     15[0m [0;34m[0m[0m
+[1;32m     16[0m     cost = (-1/m) * np.sum(
+
+[0;31mValueError[0m: shapes (75,4) and (1,4) not aligned: 4 (dim 1) != 1 (dim 0)
+ValueError: shapes (75,4) and (1,4) not aligned: 4 (dim 1) != 1 (dim 0)
+",ValueError,"shapes (75,4) and (1,4) not aligned: 4 (dim 1) != 1 (dim 0)",True
+matplotlib_6,5db514d7-6a8a-3063-b9b7-2c8a8e96fc87,indexerror,index 6 is out of bounds for axis 0 with size 6,"['---------------------------------------------------------------------------', 'IndexError                                Traceback (most recent call last)', ""/tmp/ipykernel_27/3966309574.py in <module>\n      3 \n      4 for i, col in enumerate(list(df.columns.values)):\n----> 5     axes_box  = ax[i]\n      6     sns.boxplot(data=df, x=col, ax=axes_box,color='#a5c687')\n      7     ax[i].set_title(col,fontsize=15,color='magenta')\n"", 'IndexError: index 6 is out of bounds for axis 0 with size 6']",/junobench_env/matplotlib_6/matplotlib_6_extension.ipynb,2026-01-14T18:37:52.027731,CellExecutionError,"An error occurred while executing the following cell:
+------------------
+sns.set_style('darkgrid')
+fig, ax = plt.subplots(6,1, figsize=(20, 45))#Original was 9,1
+for i, col in enumerate(list(df.columns)):
+    axes_hist = ax[i]
+    sns.histplot(data=df, x=col, ax=axes_hist,color = '#a5c687', stat = ""density"",edgecolor='#ff1195')
+    sns.kdeplot(x = col, data = df,ax=axes_hist, color = '#5678f1', linewidth = 5)
+    ax[i].set_title(col,fontsize=35,color='#561195')
+------------------
+
+[0;31m---------------------------------------------------------------------------[0m
+[0;31mIndexError[0m                                Traceback (most recent call last)
+[0;32m<ipython-input-14-cf1281bad4c0>[0m in [0;36m<cell line: 3>[0;34m()[0m
+[1;32m      2[0m [0mfig[0m[0;34m,[0m [0max[0m [0;34m=[0m [0mplt[0m[0;34m.[0m[0msubplots[0m[0;34m([0m[0;36m6[0m[0;34m,[0m[0;36m1[0m[0;34m,[0m [0mfigsize[0m[0;34m=[0m[0;34m([0m[0;36m20[0m[0;34m,[0m [0;36m45[0m[0;34m)[0m[0;34m)[0m[0;31m#Original was 9,1[0m[0;34m[0m[0;34m[0m[0m
+[1;32m      3[0m [0;32mfor[0m [0mi[0m[0;34m,[0m [0mcol[0m [0;32min[0m [0menumerate[0m[0;34m([0m[0mlist[0m[0;34m([0m[0mdf[0m[0;34m.[0m[0mcolumns[0m[0;34m)[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[0;32m----> 4[0;31m     [0maxes_hist[0m [0;34m=[0m [0max[0m[0;34m[[0m[0mi[0m[0;34m][0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m      5[0m     [0msns[0m[0;34m.[0m[0mhistplot[0m[0;34m([0m[0mdata[0m[0;34m=[0m[0mdf[0m[0;34m,[0m [0mx[0m[0;34m=[0m[0mcol[0m[0;34m,[0m [0max[0m[0;34m=[0m[0maxes_hist[0m[0;34m,[0m[0mcolor[0m [0;34m=[0m [0;34m'#a5c687'[0m[0;34m,[0m [0mstat[0m [0;34m=[0m [0;34m""density""[0m[0;34m,[0m[0medgecolor[0m[0;34m=[0m[0;34m'#ff1195'[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[1;32m      6[0m     [0msns[0m[0;34m.[0m[0mkdeplot[0m[0;34m([0m[0mx[0m [0;34m=[0m [0mcol[0m[0;34m,[0m [0mdata[0m [0;34m=[0m [0mdf[0m[0;34m,[0m[0max[0m[0;34m=[0m[0maxes_hist[0m[0;34m,[0m [0mcolor[0m [0;34m=[0m [0;34m'#5678f1'[0m[0;34m,[0m [0mlinewidth[0m [0;34m=[0m [0;36m5[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+
+[0;31mIndexError[0m: index 6 is out of bounds for axis 0 with size 6
+IndexError: index 6 is out of bounds for axis 0 with size 6
+",IndexError,index 6 is out of bounds for axis 0 with size 6,True
+statsmodels_1,83bbc720-ecc2-3a8a-bd68-0d0058651035,valueerror,45 option for line not understood,"['---------------------------------------------------------------------------', 'ValueError                                Traceback (most recent call last)', ""/tmp/ipykernel_28/1803351197.py in <module>\n----> 1 fig = sm.qqplot(train['urea'],line=45,fit=True)\n"", '/opt/conda/lib/python3.7/site-packages/statsmodels/graphics/gofplots.py in qqplot(data, dist, distargs, a, loc, scale, fit, line, ax, **plotkwargs)\n    689         data, dist=dist, distargs=distargs, fit=fit, a=a, loc=loc, scale=scale\n    690     )\n--> 691     fig = probplot.qqplot(ax=ax, line=line, **plotkwargs)\n    692     return fig\n    693 \n', '/opt/conda/lib/python3.7/site-packages/statsmodels/graphics/gofplots.py in qqplot(self, xlabel, ylabel, line, other, ax, swap, **plotkwargs)\n    481                 ax=ax,\n    482                 line=line,\n--> 483                 **plotkwargs,\n    484             )\n    485             if xlabel is None:\n', '/opt/conda/lib/python3.7/site-packages/statsmodels/graphics/gofplots.py in _do_plot(x, y, dist, line, ax, fmt, step, **kwargs)\n   1047         if line not in [""r"", ""q"", ""45"", ""s""]:\n   1048             msg = ""%s option for line not understood"" % line\n-> 1049             raise ValueError(msg)\n   1050 \n   1051         qqline(ax, line, x=x, y=y, dist=dist)\n', 'ValueError: 45 option for line not understood']",/junobench_env/statsmodels_1/statsmodels_1_extension.ipynb,2026-01-14T18:15:48.675460,CellExecutionError,"An error occurred while executing the following cell:
+------------------
+fig = sm.qqplot(train['osmo'],line=45,fit=True)
+------------------
+
+[0;31m---------------------------------------------------------------------------[0m
+[0;31mValueError[0m                                Traceback (most recent call last)
+[0;32m<ipython-input-29-1c3a8c52f37c>[0m in [0;36m<cell line: 1>[0;34m()[0m
+[0;32m----> 1[0;31m [0mfig[0m [0;34m=[0m [0msm[0m[0;34m.[0m[0mqqplot[0m[0;34m([0m[0mtrain[0m[0;34m[[0m[0;34m'osmo'[0m[0;34m][0m[0;34m,[0m[0mline[0m[0;34m=[0m[0;36m45[0m[0;34m,[0m[0mfit[0m[0;34m=[0m[0;32mTrue[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m
+[0;32m/usr/local/lib/python3.10/dist-packages/statsmodels/graphics/gofplots.py[0m in [0;36mqqplot[0;34m(data, dist, distargs, a, loc, scale, fit, line, ax, **plotkwargs)[0m
+[1;32m    689[0m         [0mdata[0m[0;34m,[0m [0mdist[0m[0;34m=[0m[0mdist[0m[0;34m,[0m [0mdistargs[0m[0;34m=[0m[0mdistargs[0m[0;34m,[0m [0mfit[0m[0;34m=[0m[0mfit[0m[0;34m,[0m [0ma[0m[0;34m=[0m[0ma[0m[0;34m,[0m [0mloc[0m[0;34m=[0m[0mloc[0m[0;34m,[0m [0mscale[0m[0;34m=[0m[0mscale[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    690[0m     )
+[0;32m--> 691[0;31m     [0mfig[0m [0;34m=[0m [0mprobplot[0m[0;34m.[0m[0mqqplot[0m[0;34m([0m[0max[0m[0;34m=[0m[0max[0m[0;34m,[0m [0mline[0m[0;34m=[0m[0mline[0m[0;34m,[0m [0;34m**[0m[0mplotkwargs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m    692[0m     [0;32mreturn[0m [0mfig[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    693[0m [0;34m[0m[0m
+
+[0;32m/usr/local/lib/python3.10/dist-packages/statsmodels/graphics/gofplots.py[0m in [0;36mqqplot[0;34m(self, xlabel, ylabel, line, other, ax, swap, **plotkwargs)[0m
+[1;32m    475[0m [0;34m[0m[0m
+[1;32m    476[0m         [0;32melse[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[0;32m--> 477[0;31m             fig, ax = _do_plot(
+[0m[1;32m    478[0m                 [0mself[0m[0;34m.[0m[0mtheoretical_quantiles[0m[0;34m,[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    479[0m                 [0mself[0m[0;34m.[0m[0msample_quantiles[0m[0;34m,[0m[0;34m[0m[0;34m[0m[0m
+
+[0;32m/usr/local/lib/python3.10/dist-packages/statsmodels/graphics/gofplots.py[0m in [0;36m_do_plot[0;34m(x, y, dist, line, ax, fmt, step, **kwargs)[0m
+[1;32m   1047[0m         [0;32mif[0m [0mline[0m [0;32mnot[0m [0;32min[0m [0;34m[[0m[0;34m""r""[0m[0;34m,[0m [0;34m""q""[0m[0;34m,[0m [0;34m""45""[0m[0;34m,[0m [0;34m""s""[0m[0;34m][0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[1;32m   1048[0m             [0mmsg[0m [0;34m=[0m [0;34m""%s option for line not understood""[0m [0;34m%[0m [0mline[0m[0;34m[0m[0;34m[0m[0m
+[0;32m-> 1049[0;31m             [0;32mraise[0m [0mValueError[0m[0;34m([0m[0mmsg[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m   1050[0m [0;34m[0m[0m
+[1;32m   1051[0m         [0mqqline[0m[0;34m([0m[0max[0m[0;34m,[0m [0mline[0m[0;34m,[0m [0mx[0m[0;34m=[0m[0mx[0m[0;34m,[0m [0my[0m[0;34m=[0m[0my[0m[0;34m,[0m [0mdist[0m[0;34m=[0m[0mdist[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+
+[0;31mValueError[0m: 45 option for line not understood
+ValueError: 45 option for line not understood
+",ValueError,45 option for line not understood,True

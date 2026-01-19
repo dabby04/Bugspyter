@@ -1,13 +1,13 @@
 # Bugspyter
 
-[![Github Actions Status](https://github.com/github_username/jupyterbugbot/workflows/Build/badge.svg)](https://github.com/github_username/jupyterbugbot/actions/workflows/build.yml)
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/github_username/jupyterbugbot/main?urlpath=lab)
+[![Github Actions Status](https://github.com/github_username/bugspyter/workflows/Build/badge.svg)](https://github.com/github_username/bugspyter/actions/workflows/build.yml)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/github_username/bugspyter/main?urlpath=lab)
 
 
-A JupyterLab extension that uses AI agents to detect buggy and vulnerable code.
+A JupyterLab extension that uses an agent-based model to detect buggy and vulnerable code.
 
-This extension is composed of a Python package named `jupyterbugbot`
-for the server extension and a NPM package named `jupyterbugbot`
+This extension is composed of a Python package named `bugspyter`
+for the server extension and a NPM package named `bugspyter`
 for the frontend extension.
 
 ![ToolDemo](https://github.com/user-attachments/assets/2a13fe1e-e2e1-47b4-9907-976ef18fb30d)
@@ -17,12 +17,15 @@ for the frontend extension.
 
 - JupyterLab >= 4.0.0
 
+# Getting Started
+To start using Bugspyter, follow these installation and execution steps:
+
 ## Install
 
 To install the extension, execute:
 
 ```bash
-pip install jupyterbugbot
+pip install bugspyter
 ```
 
 ## Uninstall
@@ -30,7 +33,7 @@ pip install jupyterbugbot
 To remove the extension, execute:
 
 ```bash
-pip uninstall jupyterbugbot
+pip uninstall bugspyter
 ```
 
 ## Troubleshoot
@@ -48,20 +51,7 @@ the frontend extension, check the frontend extension is installed:
 ```bash
 jupyter labextension list
 ```
-## Frontend extension is not working
 
-If you see the frontend extension, but it is not working, check that the server extension is enabled:
-
-```
-jupyter serverextension list
-```
-## Server extension is installed and enables, but jupyterbugbot does not appear
-
-If the server extension is installed and enabled, but you are not seeing the frontend, check the frontend is installed:
-
-```
-jupyter labextension list
-```
 If it is installed, try:
 
 ```
@@ -69,96 +59,23 @@ jupyter lab clean
 jupyter lab build
 ```
 
-## Contributing
+# Running Evaluations
+We provide helper scripts to help automate the process of running evaluations.
 
-### Development install
+To run evaluations on Santana et al.'s dataset:
 
-Note: You will need NodeJS to build the extension package.
-
-The `jlpm` command is JupyterLab's pinned version of
-[yarn](https://yarnpkg.com/) that is installed with JupyterLab. You may use
-`yarn` or `npm` in lieu of `jlpm` below.
-
-```bash
-# Clone the repo to your local environment
-# Change directory to the jupyterbugbot directory
-# Install package in development mode
-pip install -e ".[test]"
-# Link your development version of the extension with JupyterLab
-jupyter labextension develop . --overwrite
-# Server extension must be manually installed in develop mode
-jupyter server extension enable jupyterbugbot
-# Rebuild extension Typescript source after making changes
-jlpm build
+1. First extract the notebooks by running:
+```
+bash experiments/extract_notebooks_Santana.sh experiments/implementation_notebooks_Santana.csv
 ```
 
-You can watch the source directory and run JupyterLab at the same time in different terminals to watch for changes in the extension's source and automatically rebuild the extension.
+2. Run `python ./automate/run_all_Santana.py`
 
-```bash
-# Watch the source directory in one terminal, automatically rebuilding when needed
-jlpm watch
-# Run JupyterLab in another terminal
-jupyter lab
+To run evaluations on JunoBench's benchmark dataset:
+1. First clone the repository on HuggingFace:
+```
+git clone https://huggingface.co/datasets/PELAB-LiU/JunoBench
 ```
 
-With the watch command running, every saved change will immediately be built locally and available in your running JupyterLab. Refresh JupyterLab to load the change in your browser (you may need to wait several seconds for the extension to be rebuilt).
+2. Follow the `docker run` command on their HuggingFace Repository.
 
-By default, the `jlpm build` command generates the source maps for this extension to make it easier to debug using the browser dev tools. To also generate source maps for the JupyterLab core extensions, you can run the following command:
-
-```bash
-jupyter lab build --minimize=False
-```
-
-### Development uninstall
-
-```bash
-# Server extension must be manually disabled in develop mode
-jupyter server extension disable jupyterbugbot
-pip uninstall jupyterbugbot
-```
-
-In development mode, you will also need to remove the symlink created by `jupyter labextension develop`
-command. To find its location, you can run `jupyter labextension list` to figure out where the `labextensions`
-folder is located. Then you can remove the symlink named `jupyterbugbot` within that folder.
-
-### Testing the extension
-
-#### Server tests
-
-This extension is using [Pytest](https://docs.pytest.org/) for Python code testing.
-
-Install test dependencies (needed only once):
-
-```sh
-pip install -e ".[test]"
-# Each time you install the Python package, you need to restore the front-end extension link
-jupyter labextension develop . --overwrite
-```
-
-To execute them, run:
-
-```sh
-pytest -vv -r ap --cov jupyterbugbot
-```
-
-#### Frontend tests
-
-This extension is using [Jest](https://jestjs.io/) for JavaScript code testing.
-
-To execute them, execute:
-
-```sh
-jlpm
-jlpm test
-```
-
-#### Integration tests
-
-This extension uses [Playwright](https://playwright.dev/docs/intro) for the integration tests (aka user level tests).
-More precisely, the JupyterLab helper [Galata](https://github.com/jupyterlab/jupyterlab/tree/master/galata) is used to handle testing the extension in JupyterLab.
-
-More information are provided within the [ui-tests](./ui-tests/README.md) README.
-
-### Packaging the extension
-
-See [RELEASE](RELEASE.md)

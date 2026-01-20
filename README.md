@@ -1,6 +1,5 @@
 # Bugspyter
 
-[![Github Actions Status](https://github.com/github_username/bugspyter/workflows/Build/badge.svg)](https://github.com/github_username/bugspyter/actions/workflows/build.yml)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/github_username/bugspyter/main?urlpath=lab)
 
 

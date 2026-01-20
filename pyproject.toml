@@ -33,8 +33,10 @@ dependencies = [
     "langchain_anthropic",
     "langchain-huggingface",
     "langchain-openai",
+    "langchain_cohere",
     "bandit",
-    "keyring"
+    "keyring",
+    "papermill"
 
 ]
 dynamic = ["version", "description", "authors", "urls", "keywords"]

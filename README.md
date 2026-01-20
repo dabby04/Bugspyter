@@ -21,20 +21,27 @@ for the frontend extension.
 To start using Bugspyter, follow these installation and execution steps:
 
 ## Install
-
-To install the extension, execute:
-
-```bash
-pip install bugspyter
+1. First clone this repository to your local system.
+2. In this current working directory, run
 ```
-
-## Uninstall
-
-To remove the extension, execute:
-
-```bash
-pip uninstall bugspyter
+docker build -t bugspyter:dev .
 ```
+3. Once the application has been built, run:
+```
+docker run --rm -it \
+  -p 8888:8888 \
+  -e NB_UID="$(id -u)" -e NB_GID="$(id -g)" \
+  -v "$PWD":/home/jovyan/bugspyter \
+  bugspyter:dev bash
+```
+4. In your open docker bash terminal, run:
+```
+pip install -e .
+```
+## Launch
+1. In your open terminal window, run `jupyter lab`.
+2. If have an existing notebook, open it up.
+3. You should see the Bugspyter icon at the top right of your ribbon bar.
 
 ## Troubleshoot
 
@@ -71,11 +78,31 @@ bash experiments/extract_notebooks_Santana.sh experiments/implementation_noteboo
 
 2. Run `python ./automate/run_all_Santana.py`
 
+* Note: Update variables `CHOSEN_MODEL`, `SELECTED_LLM`, `SELECTED_MODEL`, and `API_KEY`
+
 To run evaluations on JunoBench's benchmark dataset:
-1. First clone the repository on HuggingFace:
+1. First clone the repository on HuggingFace in the open terminal:
 ```
 git clone https://huggingface.co/datasets/PELAB-LiU/JunoBench
 ```
 
-2. Follow the `docker run` command on their HuggingFace Repository.
+2. Follow the instruction for `docker pull` on their HuggingFace Repo:
+```
+docker pull yarinamomo/kaggle_python_env:latest
+```
 
+3.  In the terminal for this active JunoBench project, run:
+```
+docker run \
+  -v "$(pwd):/junobench_env" \
+  -v "PATH_TO_CLONED_BUGSPYTER_REPO":/home/jovyan/bugspyter/" \
+  -w /junobench_env \
+  -p 8888:8888 \
+  -it yarinamomo/kaggle_python_env:latest \
+  bash
+  ```
+4. In the active bash terminal, run
+```
+pip install -e /home/jovyan/bugspyter
+```
+5. Run `python /home/jovyan/bugspyter/automate/run_all_JunoBench.py`

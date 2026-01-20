@@ -4,10 +4,10 @@ import subprocess
 CHOSEN_MODEL = "gemini-2.5-flash"
 
 # Path to Benchmark folder
-BENCHMARK_DIR = "/benchmarks/junobench_env"
+BENCHMARK_DIR = "/junobench_env/benchmark"
 
 # Path to experiments folder inside Docker (must match your Docker mount)
-EXPERIMENTS_DIR = os.path.join("/opt/my_extension","experiments",CHOSEN_MODEL)
+EXPERIMENTS_DIR = os.path.join("/home/jovyan/bugspyter/","experiments",CHOSEN_MODEL)
 
 os.makedirs(EXPERIMENTS_DIR, exist_ok=True)
 

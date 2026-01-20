@@ -1,7 +1,5 @@
 # Bugspyter
 
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/github_username/bugspyter/main?urlpath=lab)
-
 
 A JupyterLab extension that uses an agent-based model to detect buggy and vulnerable code.
 
@@ -33,14 +31,17 @@ docker run --rm -it \
   -v "$PWD":/home/jovyan/bugspyter \
   bugspyter:dev bash
 ```
-4. In your open docker bash terminal, run:
+4. In the Docker shell, run:
 ```
 pip install -e .
 ```
 ## Launch
-1. In your open terminal window, run `jupyter lab`.
-2. If have an existing notebook, open it up.
-3. You should see the Bugspyter icon at the top right of your ribbon bar.
+1. In the same Docker shell, start JupyterLab:
+```
+jupyter lab --ip 0.0.0.0 --no-browser
+```
+2. Open the printed URL in your browser (http://localhost:8888/…).
+3. You should see the Bugspyter icon at the top right of the ribbon bar.
 
 ## Troubleshoot
 
@@ -68,18 +69,21 @@ jupyter lab build
 # Running Evaluations
 We provide helper scripts to help automate the process of running evaluations.
 
-To run evaluations on Santana et al.'s dataset:
+**To run evaluations on Santana et al.'s dataset:**
 
 1. First extract the notebooks by running:
 ```
 bash experiments/extract_notebooks_Santana.sh experiments/implementation_notebooks_Santana.csv
 ```
 
-2. Run `python ./automate/run_all_Santana.py`
+2. Run 
+```
+python ./automate/run_all_Santana.py
+```
 
-* Note: Update variables `CHOSEN_MODEL`, `SELECTED_LLM`, `SELECTED_MODEL`, and `API_KEY`
+Note: Update CHOSEN_MODEL, SELECTED_LLM, SELECTED_MODEL, and API_KEY in automate/run_all_Santana.py (or set them as environment variables) before running.
 
-To run evaluations on JunoBench's benchmark dataset:
+**To run evaluations on JunoBench's benchmark dataset:**
 1. First clone the repository on HuggingFace in the open terminal:
 ```
 git clone https://huggingface.co/datasets/PELAB-LiU/JunoBench
@@ -100,8 +104,11 @@ docker run \
   -it yarinamomo/kaggle_python_env:latest \
   bash
   ```
-4. In the active bash terminal, run
+4. In the Docker shell, run:
 ```
 pip install -e /home/jovyan/bugspyter
 ```
-5. Run `python /home/jovyan/bugspyter/automate/run_all_JunoBench.py`
+5. Run 
+```
+python /home/jovyan/bugspyter/automate/run_all_JunoBench.py
+```

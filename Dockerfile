@@ -12,5 +12,4 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 USER ${NB_UID}
-# ENV PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring
-ENV PYTHON_KEYRING_BACKEND=keyrings.alt.file.EncryptedKeyring
+ENV PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring

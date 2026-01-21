@@ -21,7 +21,7 @@ To start using Bugspyter, follow these installation and execution steps:
 1. First clone this repository to your local system.
 2. In this current working directory, run
 ```
-docker build -t bugspyter:dev .
+docker build --no-cache -t bugspyter:dev .
 ```
 3. Once the application has been built, run:
 ```
